@@ -50,7 +50,8 @@ print("velocities generated at "+ str(time.time() - timeinit))
 #totalv.append(np.sqrt(i[0] + i[1] + i[2]))
 #print(np.average(totalv))
 collisioncount = 0
-escapecount = 0
+escapecount = 0 
+momentum = [0, 0, 0]
 for i in range(1000):
     Npos = Npos + Nvelocity * dt
     #print(len(Npos))
@@ -59,6 +60,7 @@ for i in range(1000):
             if abs(k) > abs(L/2):
                 if (Npos[a][2] < -1 * L/2) and (abs(Npos[a][0]) < 0.25*L) and (abs(Npos[a][1]) < 0.25*L):
                     #print("bye fuckers")
+                    momentum += Nvelocity * m
                     Npos[a] = [0, 0, L/2]
                     Nvelocity[a] = [randomv(), randomv(), randomv()]
                     escapecount += 1
@@ -69,4 +71,5 @@ for i in range(1000):
                     #print("collision")
     print(str(100*i / 1000) + "% completed")
     middleish = 0
-print(escapecount / (collisioncount + escapecount))
+print(momentum)
+print(escapecount)
