@@ -3,10 +3,10 @@ from numba import njit
 import time
 
 
-K = 1.38*10**-23
+K = 1.38*10**(-23)
 T = 3*10**3 
 N = 10**5
-L = 10*10**(-6)
+L = 10**(-6)
 m = 3.35*10**(-24)
 dt = 10**(-12)
 sd = np.sqrt(K*T/m)
@@ -49,18 +49,24 @@ print("velocities generated at "+ str(time.time() - timeinit))
 #for i in Nvelocitysquared:
 #totalv.append(np.sqrt(i[0] + i[1] + i[2]))
 #print(np.average(totalv))
-
-#@njit 
-#def update(timestep):
 collisioncount = 0
+escapecount = 0
 for i in range(1000):
     Npos = Npos + Nvelocity * dt
     #print(len(Npos))
     for a, b in enumerate(Npos):
         for j, k in enumerate(b):
             if abs(k) > abs(L/2):
-                Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
-                Nvelocity[a][j] = Nvelocity[a][j] * k/abs(k)
-                collisioncount += 1
-    print("stage " + str(i) + " complete")
-print(collisioncount)
+                if (Npos[a][2] < -1 * L/2) and (abs(Npos[a][0]) < 0.25*L) and (abs(Npos[a][1]) < 0.25*L):
+                    #print("bye fuckers")
+                    Npos[a] = [0, 0, L/2]
+                    Nvelocity[a] = [randomv(), randomv(), randomv()]
+                    escapecount += 1
+                else:
+                    Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
+                    Nvelocity[a][j] = Nvelocity[a][j] * k/abs(k)
+                    collisioncount += 1
+                    #print("collision")
+    print(str(100*i / 1000) + "% completed")
+    middleish = 0
+print(escapecount / (collisioncount + escapecount))
