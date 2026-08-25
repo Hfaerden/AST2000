@@ -1,17 +1,27 @@
 import numpy as np 
+from numba import njit
+import time
 
 
 K = 1.38*10**-23
 T = 3*10**3 
-N = 100
+N = 10**5
 L = 10*10**(-6)
-error = 10^(-10)
-dt = 10^(-12)
+m = 3.35*10**(-24)
+dt = 10**(-12)
+sd = np.sqrt(K*T/m)
+timeinit = time.time()
+def randomv():
+    return(np.random.default_rng().normal(0, sd))
 
-Npos = np.zeros((100, 3), dtype = float)
+Npos = np.zeros((N, 3), dtype = float)
 Npos = Npos - L/2
-Nvelocity = []
+Nvelocity = np.zeros((N, 3), dtype = float)
 
+for i in range(len(Nvelocity)):
+    for j in range(3):
+        Nvelocity[i][j] = randomv()
+ 
 Npos[0] = [-L/2, -L/2, -L/2]
 for i in range (1, len(Npos)):
     if Npos[i-1][0] + L/(N**(1/3)) <= L/2:
@@ -27,22 +37,30 @@ for i in range (1, len(Npos)):
         Npos[i][1] = -L/2
         Npos[i][2] = Npos[i-1][2] + L/(N**(1/3))
 
-print(Npos)
+print("velocities generated at "+ str(time.time() - timeinit))
+#print(Npos)
+#print("-----------------")
+#print(Nvelocity)
+#print("sum = " + str(np.sum(np.sum(Nvelocity))/10**5))
 
-'''
-for i in range(5):
-    for j in range(5):
-        for k in range(4):
-            Npos.append([(2*10**(-6)-10*10**(-6))/2], [2*10**(-6)-10*10**(-6))/2], 2.5*10*10**(-6)])
+#Nvelocitysquared = Nvelocity**2
 
-rng = np.random.default_rng()
+#totalv = []
+#for i in Nvelocitysquared:
+#totalv.append(np.sqrt(i[0] + i[1] + i[2]))
+#print(np.average(totalv))
 
-sample = rng.normal()
-
+#@njit 
+#def update(timestep):
+collisioncount = 0
 for i in range(1000):
-    Npos = Npos + Nvelocity * dt 
-    for i in range(3):
-        for n in Npos:
-            if abs(Npos[n][i]) - 5*10**(-7) < error: 
-                '''
-   #flip angle 
+    Npos = Npos + Nvelocity * dt
+    #print(len(Npos))
+    for a, b in enumerate(Npos):
+        for j, k in enumerate(b):
+            if abs(k) > abs(L/2):
+                Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
+                Nvelocity[a][j] = Nvelocity[a][j] * k/abs(k)
+                collisioncount += 1
+    print("stage " + str(i) + " complete")
+print(collisioncount)
