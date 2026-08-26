@@ -53,7 +53,7 @@ for i in range(1000):
 momentumx = np.zeros(N, dtype = float)
 momentumy = np.zeros(N, dtype = float) 
 momentumz = np.zeros(N, dtype = float)
-for i in range(1000):
+for i in range(1, 1001):
     Npos = Npos + Nvelocity * dt 
     Noutside = abs(Npos) > L/2
     #Npos = Npos - Noutside*2*(Npos - L/2)
@@ -67,8 +67,10 @@ for i in range(1000):
     momentumz += Nvelocity[:,2] * m * Escape
     escaped += Escape 
     collisioncount += Noutside
-    print(str(100*i / 1000) + "% completed")
-momentum = [sum(momentumx), sum(momentumy), sum(momentumz)]
-print(momentum)
-print(sum(escaped))
-print(sum(collisioncount))
+    if i%20 == 0:
+        print("#"*int((i/20)) + "-"*(50-int(i/20)))
+
+print("Simulasjon ferdig på " + str(round(time.time()-timeinit, 2)) + " sekunder \n")
+print(f"momentumsum fra unslippende partikler: [{sum(momentumx)}, {sum(momentumy)}, {sum(momentumz)}]")
+print("Partikler som slapp ut: " + str(round(sum(escaped)))) 
+#print("Antall kollisjoner med vegger: " + str(sum(collisioncount)))
