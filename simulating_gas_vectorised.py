@@ -1,5 +1,4 @@
 import numpy as np 
-from numba import njit
 import time
 
 
@@ -8,7 +7,9 @@ T = 3*10**3
 N = 10**5
 L = 10**(-6)
 m = 3.35*10**(-24)
-dt = 10**(-13)
+dt = 10**(-9)
+time_simulated = 10**(-9)
+timesteps = int(time_simulated/dt)
 sd = np.sqrt(K*T/m)
 timeinit = time.time()
 
@@ -33,7 +34,7 @@ print("velocities generated at "+ str(time.time() - timeinit))
 collisioncount = 0
 escapecount = 0 
 momentum = np.zeros(3) 
-
+'''
 for i in range(10000):
     Npos = Npos + Nvelocity * dt
     #print(len(Npos))
@@ -51,9 +52,44 @@ for i in range(10000):
                     Nvelocity[a][j] = Nvelocity[a][j] * k/abs(k)
                     collisioncount += 1
                     #print("collision")
-    print(str(100*i / 1000) + "% completed")
-print(momentum)
-print(escapecount)
+    print(str(100*i / 1000) + "% completed")testarr
+'''
+
+
+
+
+
+
+
+
+#tempbool=np.logical_or(Nboolean =  false_array)
+
+#tempbool = filter() 
+
+collision_count = 0
+
+for i in range(timesteps):
+    
+    Npos = Npos + Nvelocity*dt
+    
+    Nboolean = abs(Npos) > L/2    #kollisjonslogikk
+    
+    Nvelocity = (-Nvelocity) * (Nboolean)
+    
+    for j in range(len(Nboolean)):
+        for a in range(3):
+            if Nboolean[j][a] == True:
+                collision_count +=1
+
+
+
+
+print(collision_count)
+
+#print (Nboolean)
+#print (tempbool)
+#print(momentum)
+#print(escapecount)
 
 
 
