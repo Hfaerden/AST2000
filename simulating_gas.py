@@ -1,3 +1,6 @@
+from re import escape
+from warnings import warn
+
 import numpy as np 
 from numba import njit
 import time
@@ -19,13 +22,9 @@ Npos = np.random.uniform(-L/2, L/2, (N, 3))
 Npos[0] = [-L/2, -L/2, -L/2]
 
 print("velocities generated at "+ str(time.time() - timeinit))
-#print(Npos)
 #print("-----------------")
-#print(Nvelocity)
 #print("sum = " + str(np.sum(np.sum(Nvelocity))/10**5))
-
 #Nvelocitysquared = Nvelocity**2
-
 #totalv = []
 #for i in Nvelocitysquared:
 #totalv.append(np.sqrt(i[0] + i[1] + i[2]))
@@ -33,7 +32,7 @@ print("velocities generated at "+ str(time.time() - timeinit))
 collisioncount = 0
 escapecount = 0 
 momentum = np.zeros(3) 
-
+'''
 for i in range(1000):
     Npos = Npos + Nvelocity * dt
     #print(len(Npos))
@@ -50,15 +49,22 @@ for i in range(1000):
                     Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
                     Nvelocity[a][j] = Nvelocity[a][j] * -1
                     collisioncount += 1
-                    #print("collision")
+'''
+
+escaped = np.zeros(N) 
+collisioncount = np.zeros((N,3), dtype = int)
+for i in range(1000):
+    Npos = Npos + Nvelocity * dt 
+    Noutside = abs(Npos) > L/2
+    #Npos = Npos - Noutside*2*(Npos - L/2)
+    Nvelocity = Nvelocity - 2*Nvelocity * Noutside
+    Nsenteredx = abs(Npos[:,0]) < 0.25*L 
+    Nsenteredy = abs(Npos[:,1]) < 0.25*L 
+    Centerednoth = np.logical_and(Nsenteredx, Nsenteredy)
+    Escape = np.logical_and((Centerednoth), (Npos[:,2] < -L/2)) 
+    escaped += Escape 
+    collisioncount += Noutside
     print(str(100*i / 1000) + "% completed")
-
-Nbool = abs(Npos) > L/2
-#Nposcentered = np.logical_and((abs(Npos[0] < 0.25*L), (abs(Npos[1]) < 0.25 * L)))
-print(Nbool)
-
 print(momentum)
-print(escapecount / (collisioncount + escapecount))
-
-
-
+print(sum(escaped))
+print(sum(collisioncount))
