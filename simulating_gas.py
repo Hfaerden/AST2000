@@ -8,7 +8,7 @@ T = 3*10**3
 N = 10**5
 L = 10**(-6)
 m = 3.35*10**(-24)
-dt = 10**(-13)
+dt = 10**(-12)
 sd = np.sqrt(K*T/m)
 timeinit = time.time()
 
@@ -34,7 +34,7 @@ collisioncount = 0
 escapecount = 0 
 momentum = np.zeros(3) 
 
-for i in range(10000):
+for i in range(1000):
     Npos = Npos + Nvelocity * dt
     #print(len(Npos))
     for a, b in enumerate(Npos):
@@ -48,12 +48,17 @@ for i in range(10000):
                     escapecount += 1
                 else:
                     Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
-                    Nvelocity[a][j] = Nvelocity[a][j] * k/abs(k)
+                    Nvelocity[a][j] = Nvelocity[a][j] * -1
                     collisioncount += 1
                     #print("collision")
     print(str(100*i / 1000) + "% completed")
+
+Nbool = abs(Npos) > L/2
+#Nposcentered = np.logical_and((abs(Npos[0] < 0.25*L), (abs(Npos[1]) < 0.25 * L)))
+print(Nbool)
+
 print(momentum)
-print(escapecount)
+print(escapecount / (collisioncount + escapecount))
 
 
 
