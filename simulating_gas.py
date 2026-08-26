@@ -29,9 +29,9 @@ print("velocities generated at "+ str(time.time() - timeinit))
 #for i in Nvelocitysquared:
 #totalv.append(np.sqrt(i[0] + i[1] + i[2]))
 #print(np.average(totalv))
-collisioncount = 0
-escapecount = 0 
-momentum = np.zeros(3) 
+collisioncount = np.zeros((N,3), dtype = int)
+momentum = np.zeros((N, 3), dtype = float) 
+escaped = np.zeros(N) 
 '''
 for i in range(1000):
     Npos = Npos + Nvelocity * dt
@@ -50,9 +50,9 @@ for i in range(1000):
                     Nvelocity[a][j] = Nvelocity[a][j] * -1
                     collisioncount += 1
 '''
-
-escaped = np.zeros(N) 
-collisioncount = np.zeros((N,3), dtype = int)
+momentumx = np.zeros(N, dtype = float)
+momentumy = np.zeros(N, dtype = float) 
+momentumz = np.zeros(N, dtype = float)
 for i in range(1000):
     Npos = Npos + Nvelocity * dt 
     Noutside = abs(Npos) > L/2
@@ -62,9 +62,13 @@ for i in range(1000):
     Nsenteredy = abs(Npos[:,1]) < 0.25*L 
     Centerednoth = np.logical_and(Nsenteredx, Nsenteredy)
     Escape = np.logical_and((Centerednoth), (Npos[:,2] < -L/2)) 
+    momentumx += Nvelocity[:,0] * m * Escape
+    momentumy += Nvelocity[:,1] * m * Escape
+    momentumz += Nvelocity[:,2] * m * Escape
     escaped += Escape 
     collisioncount += Noutside
     print(str(100*i / 1000) + "% completed")
+momentum = [sum(momentumx), sum(momentumy), sum(momentumz)]
 print(momentum)
 print(sum(escaped))
 print(sum(collisioncount))
