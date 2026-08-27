@@ -74,7 +74,7 @@ print(f"Kraften i z retning er {Forcez}")
 print("Simulasjon ferdig på " + str(round(time.time()-timeinit, 2)) + " sekunder \n")
 print(f"momentumsum fra unslippende partikler: [{sum(momentumx)}, {sum(momentumy)}, {sum(momentumz)}]")
 print("Partikler som slapp ut: " + str(round(sum(escaped))))
-print(f"gjennomsnittlig hastighet for unsluppne partikler i z-retning er {sum(momentumz)/round(sum(escaped))}")
+print(f"gjennomsnittlig hastighet for unsluppne partikler i z-retning er {(sum(momentumz)/m)/round(sum(escaped))}")
 
 
 
