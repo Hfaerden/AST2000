@@ -1,6 +1,3 @@
-from re import escape
-from warnings import warn
-
 import numpy as np 
 from numba import njit
 import time
@@ -29,27 +26,9 @@ print("velocities generated at "+ str(time.time() - timeinit))
 #for i in Nvelocitysquared:
 #totalv.append(np.sqrt(i[0] + i[1] + i[2]))
 #print(np.average(totalv))
-collisioncount = np.zeros((N,3), dtype = int)
+#collisioncount = np.zeros((N,3), dtype = int)
 momentum = np.zeros((N, 3), dtype = float) 
 escaped = np.zeros(N) 
-'''
-for i in range(1000):
-    Npos = Npos + Nvelocity * dt
-    #print(len(Npos))
-    for a, b in enumerate(Npos):
-        for j, k in enumerate(b):
-            if abs(k) > abs(L/2):
-                if (Npos[a][2] < -L/2) and (abs(Npos[a][0]) < 0.25*L) and (abs(Npos[a][1]) < 0.25*L):
-                    #print("bye fuckers")
-                    momentum += Nvelocity[a] * m
-                    Npos[a] = [0, 0, L/2]
-                    Nvelocity[a] = np.random.normal(0, sd, (1, 3))
-                    escapecount += 1
-                else:
-                    Npos[a][j] = k/abs(k) * L/2 - k/(abs(k)) * (abs(k) - abs(L/2)) #Teleporter den over veggen til riktig sted dersom den gikk over 
-                    Nvelocity[a][j] = Nvelocity[a][j] * -1
-                    collisioncount += 1
-'''
 momentumx = np.zeros(N, dtype = float)
 momentumy = np.zeros(N, dtype = float) 
 momentumz = np.zeros(N, dtype = float)
@@ -66,11 +45,10 @@ for i in range(1, 1001):
     momentumy += Nvelocity[:,1] * m * Escape
     momentumz += Nvelocity[:,2] * m * Escape
     escaped += Escape 
-    collisioncount += Noutside
+    #collisioncount += Noutside
     if i%20 == 0:
         print("#"*int((i/20)) + "-"*(50-int(i/20)))
 
 print("Simulasjon ferdig på " + str(round(time.time()-timeinit, 2)) + " sekunder \n")
 print(f"momentumsum fra unslippende partikler: [{sum(momentumx)}, {sum(momentumy)}, {sum(momentumz)}]")
 print("Partikler som slapp ut: " + str(round(sum(escaped)))) 
-#print("Antall kollisjoner med vegger: " + str(sum(collisioncount)))
