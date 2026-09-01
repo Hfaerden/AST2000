@@ -3,10 +3,6 @@ import time
 import math
 
 K = 1.38*10**(-23)
-dt = 10**(-12)
-total_time=10**-9
-timesteps = int(total_time/dt)
-rocket_width = 2
 
 class Gassimulation:
     def __init__(self, number, temperature, mass, totaltime, dt, length):
@@ -20,11 +16,12 @@ class Gassimulation:
         self.momentumz = np.zeros(self.N, dtype = float)
         self.escaped = np.zeros(self.N)
         self.timesteps = int(totaltime / dt) + 1
+        self.totaltime = totaltime
     def runsim(self):
         timeinit = time.time()
         for i in range(1, self.timesteps):
             
-            self.Npos = self.Npos + self.Nvelocity * dt 
+            self.Npos = self.Npos + self.Nvelocity * self.dt 
             self.Noutside = abs(self.Npos) > self.len/2
             self.Nvelocity = self.Nvelocity - 2*self.Nvelocity * self.Noutside
             
@@ -38,7 +35,7 @@ class Gassimulation:
             #collisioncount += Noutside
             if i%20 == 0:
                 print("#"*int((i/20)) + "-"*(50-int(i/20)))
-        Forcez = (sum(self.momentumz)/total_time)
+        Forcez = (sum(self.momentumz)/self.totaltime)
         print(f"Kraften i z retning er {Forcez}")
         print("Simulasjon ferdig på " + str(round(time.time()-timeinit, 2)) + " sekunder \n")
         print(f"momentumsum fra unslippende partikler: {sum(self.momentumz)}")
