@@ -1,5 +1,3 @@
-
-
 from ast2000tools.space_mission import SpaceMission
 import ast2000tools.utils as utils
 seed = utils.get_seed('user_str')
