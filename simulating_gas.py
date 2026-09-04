@@ -43,5 +43,5 @@ class Gassimulation:
         print(f"gjennomsnittlig hastighet for unsluppne partikler i z-retning er {(sum(self.momentumz)/self.m)/round(sum(self.escaped))}")
 
 if __name__ == "__main__":
-    engine = Gassimulation(10**5, 3*10**3, 3.35*10**(-24), 10**(-9), 10**(-12), 10**(-6))
+    engine = Gassimulation(10**5, 3*10**3, 3.36*10**(-27), 10**(-9), 10**(-12), 10**(-6))
     engine.runsim()
