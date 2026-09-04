@@ -9,10 +9,10 @@ mission = SpaceMission(seed)
 print(mission.spacecraft_mass)
 print(mission.spacecraft_area)
 
-F = 1
+F = 82144
 delta_v = 1
 v = 1
-fuel_cons = 1
+fuel_cons = 18.6
 speed_boost = v + delta_v
 fuel_start = 1
 fuel_kg = fuel_start
