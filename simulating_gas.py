@@ -35,8 +35,8 @@ class Gassimulation:
             self.escaped += self.Escape #Teller hvor mange partikeller har unsluppet. 
             if i%20 == 0: #lager en fancy progress bar for simulasjonen
                 print("#"*int((i/20)) + "-"*(50-int(i/20)))
-        Forcez = (sum(self.momentumz)/self.totaltime) #regner ut total kraft 
-        print(f"Kraften i z retning er {Forcez}") #Denne og under printer relevant informasjon
+        self.Forcez = (sum(self.momentumz)/self.totaltime) #regner ut total kraft 
+        print(f"Kraften i z retning er {self.Forcez}") #Denne og under printer relevant informasjon
         print("Simulasjon ferdig på " + str(round(time.time()-timeinit, 2)) + " sekunder \n")
         print(f"momentumsum fra unslippende partikler: {sum(self.momentumz)}")
         print("Partikler som slapp ut: " + str(round(sum(self.escaped))))
