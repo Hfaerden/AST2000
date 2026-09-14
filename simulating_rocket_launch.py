@@ -15,46 +15,8 @@ seed = utils.get_seed('natanies')
 mission = SM(seed)  #setter opp mission-raketten
 system = SS(seed)   #setter opp solsystemet vårt
 
-t = 0
-dt = 0.01
 
-
-box_area = ( 10**(-6) )**2
-n_box = mission.spacecraft_area/box_area
-f_z_box = 5.967747241700348e-09
-partikkel_masse = 3.36*10**(-27)
-
-F = n_box*f_z_box         #kraften som motoren vår gir
-fuel_cons = (373785*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
-print(fuel_cons)
-fuel = 11500        #hvor mye drivstoff vi har med oss
-wet_mass = mission.spacecraft_mass + fuel    #massen til HELE raketten, inkl brennstoff
-planet_mass = system.masses[0]*1.988*10**30  #masses gitt i solmasser. konverterer til kilo
-planet_radius = system.radii[0]*1000         #radii spytter ut i kilometer. konverterer til meter
-
-print(f'planet mass = {planet_mass}')
-print(f' planet radius = {planet_radius}')
-
-G_konst = const.G
-
-p_position = np.array( [system.initial_positions[0][0], system.initial_positions[1][0]] ) * const.AU     #spytter ut posisjonen i AU, konverterer til meter
-r_position = np.array([planet_radius, 0]) + p_position  #posisjonen til rakketten vår ved launch
-rel_position = r_position-p_position                    #posisjonen til raketten sett fra planeten
-
-
-rotation_speed = 2*np.pi*planet_radius/( system.rotational_periods[0]*const.day )     #rotasjonshastigheten
-v_p = np.array([system.initial_velocities[0][0],system.initial_velocities[1][0] ]) * const.yr/const.AU  #konverterer hastigheten til planeten til SI-enheter
-v_rocket = v_p + np.array([0, rotation_speed])       #hastigheten til raketten sett fra solen (inkludert rotasjonshastigheten til planeten)
-print(v_rocket)
-
-rel_v = v_rocket-v_p    #hastigheten som sett fra planeten
-v_rad_rel = np.dot(rel_v, rel_position) / np.linalg.norm(rel_position)  #hastigheten til raketten radielt utover som sett fra planeten
-
-r_array = np.array([rel_position])  #gjør klar til plotting av posisonen
-
-
-
-def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F):
+def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F):     #integrator-funksjonen som inneholder både gravitasjon, akselerasjon, og ODE-løseren
 
     def gravity_a (rvec):
         g = (G_konst*planet_mass*rvec)/( np.linalg.norm(r_vec)**3 )  #regner ut akselerasjonen fra gravitasjonen
@@ -76,20 +38,18 @@ def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F):
     
     while v_rad_rel < v_esc :   #for å unnslippe må vi at den radielle farten er større enn unnslipningsfarten
         
-        t += dt
         
         r_pos += v_rocket*dt + 0.5*a_i*(dt**2)                          #denne blokken er leapfrog-algoritmen (ODE-løseren)
         a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)
         v_r_abs += 0.5*(a_i+a_ip1)*dt
         a_i=a_ip1
         
-        #a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)
+        t += dt
+        #a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)              #Euler-cromer gir ca samme svar
         #v_r_abs += a_ip1*dt
         #r_pos += v_r_abs*dt
         
         p_pos += v_p*dt     #oppdaterer planetens posisjon
-        p_pos += v_p*dt     #oppdaterer planetens posisjon
-        
         
         r_mass = r_mass -fuel_cons*dt   #oppdaterer massen
         tot_fuel_cons += fuel_cons*dt   #oppdaterer mengden drivstoff brukt
@@ -127,6 +87,51 @@ def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F):
 
 
 
+
+t = 0
+dt = 0.005
+
+
+box_area = ( 10**(-6) )**2
+n_box = mission.spacecraft_area/box_area
+f_z_box = 5.967747241700348e-09
+partikkel_masse = 3.36*10**(-27)
+
+F = n_box*f_z_box         #kraften som motoren vår gir
+fuel_cons = (373785*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
+print(fuel_cons)
+fuel = 11000        #hvor mye drivstoff vi har med oss
+wet_mass = mission.spacecraft_mass + fuel    #massen til HELE raketten, inkl brennstoff
+planet_mass = system.masses[0]*1.988*10**30  #masses gitt i solmasser. konverterer til kilo
+planet_radius = system.radii[0]*1000         #radii spytter ut i kilometer. konverterer til meter
+
+print(f'planet mass = {planet_mass}')
+print(f' planet radius = {planet_radius}')
+
+G_konst = const.G
+
+p_position = np.array( [system.initial_positions[0][0], system.initial_positions[1][0]] ) * const.AU     #spytter ut posisjonen i AU, konverterer til meter
+r_position = np.array([planet_radius, 0]) + p_position  #posisjonen til rakketten vår ved launch
+rel_position = r_position-p_position                    #posisjonen til raketten sett fra planeten
+
+
+rotation_speed = 2*np.pi*planet_radius/( system.rotational_periods[0]*const.day )     #rotasjonshastigheten
+v_p = np.array([system.initial_velocities[0][0],system.initial_velocities[1][0] ]) * const.yr/const.AU  #konverterer hastigheten til planeten til SI-enheter
+v_rocket = v_p + np.array([0, rotation_speed])       #hastigheten til raketten sett fra solen (inkludert rotasjonshastigheten til planeten)
+print(v_rocket)
+
+rel_v = v_rocket-v_p    #hastigheten som sett fra planeten
+v_rad_rel = np.dot(rel_v, rel_position) / np.linalg.norm(rel_position)  #hastigheten til raketten radielt utover som sett fra planeten
+
+r_array = np.array([rel_position])  #gjør klar til plotting av posisonen
+
+
+
+
+ # finner ikke bug-en, har lett lenge. Posisjonen er rett, tiden er ca rett, men koden min gir feil plassering av raketten
+ # og den sier at det er for lite drivstoff til å komme til orbit
+
+
 print(f'position at t=0 {r_position}, ')
 
 print(wet_mass)
@@ -138,7 +143,9 @@ print(f'fuel used = {wet_mass - x[2]}')
 plt.plot(r_array[:,0], r_array[:,1])    #sjekker for plotter som gir fysisk mening
 plt.show()
 
-
+mission.set_launch_parameters(F, fuel_cons, fuel, x[-1], r_position,  t)
+mission.launch_rocket(dt)
+mission.verify_launch_result(x[0])
 
 
 
