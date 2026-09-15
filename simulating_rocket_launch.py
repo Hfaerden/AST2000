@@ -91,7 +91,7 @@ dt = 0.005
 
 box_area = ( 10**(-6) )**2
 n_box = mission.spacecraft_area/box_area
-model = Gassimulation(round(10**6), 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
+model = Gassimulation(round(10**5), 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
 model.runsim()
 f_box = model.Forcez
 partikkel_masse = 3.36*10**(-27)
