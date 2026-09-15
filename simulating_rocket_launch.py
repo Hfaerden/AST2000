@@ -29,7 +29,7 @@ def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F): 
         return a_m  #vi gjør også at akselerasjonsretnigen alltid peker direkte ut av planeten ved hjelp av retningsvektoren til R
 
     
-    a_i = motor_a(r_mass, r_vec) - gravity_a(r_vec)          #setter opp første runde av ODE-løseren
+    #a_i = motor_a(r_mass, r_vec) - gravity_a(r_vec)          #setter opp første runde av ODE-løseren
     v_rad_rel = np.dot(v_rel, r_vec) / np.linalg.norm(r_vec)         #finner hastigheten radielt utover
     
     tot_fuel_cons = 0 
@@ -39,15 +39,15 @@ def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F): 
     while np.linalg.norm(v_rel) < v_esc :   #for å unnslippe må vi at den radielle farten er større enn unnslipningsfarten
         
         
-        r_pos += v_rocket*dt + 0.5*a_i*(dt**2)                          #denne blokken er leapfrog-algoritmen (ODE-løseren)
-        a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)
-        v_r_abs += 0.5*(a_i+a_ip1)*dt
-        a_i=a_ip1
+        #r_pos += v_rocket*dt + 0.5*a_i*(dt**2)                          #denne blokken er leapfrog-algoritmen (ODE-løseren)
+        #a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)
+        #v_r_abs += 0.5*(a_i+a_ip1)*dt
+        #a_i=a_ip1
         
         t += dt
-        #a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)              #Euler-cromer gir ca samme svar
-        #v_r_abs += a_ip1*dt
-        #r_pos += v_r_abs*dt
+        a_ip1 = motor_a(r_mass, r_vec) - gravity_a(r_vec)              #Euler-cromer gir ca samme svar
+        v_r_abs += a_ip1*dt
+        r_pos += v_r_abs*dt
         
         p_pos += v_p*dt     #oppdaterer planetens posisjon
         
@@ -91,13 +91,13 @@ dt = 0.005
 
 box_area = ( 10**(-6) )**2
 n_box = mission.spacecraft_area/box_area
-model = Gassimulation(round(10**5.1), 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
+model = Gassimulation(round(10**6), 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
 model.runsim()
 f_box = model.Forcez
 partikkel_masse = 3.36*10**(-27)
 
 F = n_box*f_box        #kraften som motoren vår gir
-fuel_cons = (373785*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
+fuel_cons = (sum(model.escaped)*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
 print(fuel_cons)
 fuel = 11000        #hvor mye drivstoff vi har med oss
 wet_mass = mission.spacecraft_mass + fuel    #massen til HELE raketten, inkl brennstoff
