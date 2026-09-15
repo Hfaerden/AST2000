@@ -41,7 +41,7 @@ class Gassimulation:
         print(f"momentumsum fra unslippende partikler: {sum(self.momentumz)}")
         print("Partikler som slapp ut: " + str(round(sum(self.escaped))))
         print(f"gjennomsnittlig hastighet for unsluppne partikler i z-retning er {(sum(self.momentumz)/self.m)/round(sum(self.escaped))}")
-#Lager en klasse med paramterene oppgitt i oppgaven og kjører med den. Hvis filen er importert kjører ikke det under, og vi kan heller lage en annen boks med andre parametere. 
+#Lager et instans av klassen med paramterene oppgitt i oppgaven og kjører med den, og skriver ut forventede og faktiske verdier. Hvis filen er importert kjører ikke det under, og vi kan heller lage en annen boks med andre parametere. 
 if __name__ == "__main__":
     engine = Gassimulation(10**5, 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-7))
     engine.runsim()
