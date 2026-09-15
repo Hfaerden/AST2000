@@ -45,7 +45,8 @@ class Gassimulation:
 if __name__ == "__main__":
     engine = Gassimulation(10**5, 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-7))
     engine.runsim()
-    Vsquared = (engine.Nvelocity)**2 
-    print(f"Average velocity = {np.average(engine.Nvelocity)}")
-    print(f"Average velocity squared = {np.average(Vsquared)}")
+    Vsquaredaverage = np.linalg.norm(engine.Nvelocity)**2 / engine.N
+    print(f"Average velocity (components) = {np.average(engine.Nvelocity)}")
+    print(f"Average velocity (components) expected = 0")
+    print(f"Average velocity squared = {np.average(Vsquaredaverage)}")
     print(f"Average velocity squared expected = {3 * K*engine.T/engine.m}")
