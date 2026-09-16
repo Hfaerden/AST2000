@@ -86,20 +86,20 @@ def integrator (r_mass, r_pos, r_vec, p_pos, v_r_abs, v_rel, v_plan, t, dt, F): 
 
 
 t = 0
-dt = 0.005
+dt = 0.01
 
 
 box_area = ( 10**(-6) )**2
 n_box = mission.spacecraft_area/box_area
-model = Gassimulation(round(10**5), 3.5*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
+model = Gassimulation(round(10**6), 4*10**3, const.m_H2, 10**(-9), 10**(-12), 10**(-6))
 model.runsim()
 f_box = model.Forcez
-partikkel_masse = 3.36*10**(-27)
+partikkel_masse = const.m_H2
 
 F = n_box*f_box        #kraften som motoren vår gir
 fuel_cons = (sum(model.escaped)*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
-print(fuel_cons)
-fuel = 11000        #hvor mye drivstoff vi har med oss
+print(F)
+fuel = 13000        #hvor mye drivstoff vi har med oss
 wet_mass = mission.spacecraft_mass + fuel    #massen til HELE raketten, inkl brennstoff
 planet_mass = system.masses[0]*1.988*10**30  #masses gitt i solmasser. konverterer til kilo
 planet_radius = system.radii[0]*1000         #radii spytter ut i kilometer. konverterer til meter
@@ -112,7 +112,7 @@ G_konst = const.G
 p_position = np.array( [system.initial_positions[0][0], system.initial_positions[1][0]] ) * const.AU     #spytter ut posisjonen i AU, konverterer til meter
 r_position = np.array([planet_radius, 0]) + p_position  #posisjonen til rakketten vår ved launch
 rel_position = r_position-p_position                    #posisjonen til raketten sett fra planeten
-
+r_pos_var = np.array([planet_radius, 0]) + p_position   #hadde ett problem der posisjonen var oppdater globalt fra inne i funksjonen
 
 rotation_speed = 2*np.pi*planet_radius/( system.rotational_periods[0]*const.day )     #rotasjonshastigheten
 v_p = np.array([system.initial_velocities[0][0],system.initial_velocities[1][0] ]) * const.yr/const.AU  #konverterer hastigheten til planeten til SI-enheter
@@ -128,13 +128,15 @@ r_array = np.array([rel_position])  #gjør klar til plotting av posisonen
 
 
  # finner ikke bug-en, har lett lenge. Posisjonen er rett, tiden er ca rett, men koden min gir feil plassering av raketten
- # og den sier at det er for lite drivstoff til å komme til orbit
+ # og den sier at det er for lite drivstoff til å komme til orbit. Med 10⁵partikler setter den oss på rett plass men med for lite kraft,
+ #men hvis du øker til 10⁶, så er vi 800km for unna overflate. 
+ #r_posisjon er en konstant, og skal ikke være endret fra gang til gang
 
 
 print(f'position at t=0 {r_position}, ')
 
 print(wet_mass)
-x = integrator(wet_mass, r_position, rel_position, p_position, v_rocket, rel_v, v_p, t, dt, F) 
+x = integrator(wet_mass, r_pos_var, rel_position, p_position, v_rocket, rel_v, v_p, t+100, dt, F) 
 
 print(f'array of values = {x}' )
 print(f'fuel used = {wet_mass - x[2]}')
@@ -144,4 +146,4 @@ plt.show()
 
 mission.set_launch_parameters(F, fuel_cons, fuel, x[-1], r_position/const.AU,  t)
 mission.launch_rocket(dt)
-mission.verify_launch_result(x[0])
+mission.verify_launch_result(x[0]/const.AU)
