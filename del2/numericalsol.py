@@ -22,7 +22,7 @@ dt = 1/10_000
 def solve(index):
     x1 = pos[0][index]
     y1 = pos[1][index]
-    ax1 = -np.cos(np.arctan(y1/x1))* (4*np.pi**2 * starmass / (x1**2+y1**2))
+    ax1 = -(4*np.pi**2 * starmass / (x1**2+y1**2))
     #ay1 = -np.sin(np.arctan(y1/x1))* (4*np.pi**2 * starmass / (x1**2+y1**2))
     x = [x1]
     y = [y1]
@@ -31,8 +31,9 @@ def solve(index):
     vx = [vel[index][0]]
     vy = [vel[index][1]]
     for i in range(timesteps - 1):
-        ax.append(abs(np.cos(np.arctan(y[i]/x[i])))*(-abs(x[i])/x[i]) * 4*np.pi**2 * starmass / (x[i]**(2)+y[i]**(2)))
-        ay.append(abs(np.sin(np.arctan(y[i]/x[i])))*(-abs(y[i])/y[i]) * 4*np.pi**2 * starmass / (x[i]**(2)+y[i]**(2)))
+        r = np.sqrt(x[i]**2 + y[i]**2)
+        ax.append((x[i]/(r)) * 4*np.pi**2 * ((x[i])+10**(-11))/abs(x[i]+10**(-11)) * starmass / (r**2))
+        ay.append((y[i]/(r)) * 4*np.pi**2 * ((y[i])+10**(-11))/abs(y[i]+10**(-11)) * starmass / (r**2))
         vx.append(vx[i] + dt*ax[i+1])
         vy.append(vy[i] + dt*ay[i+1])
         x.append(x[i] + dt*vx[i+1])
