@@ -15,8 +15,12 @@ system = SS(seed)   #setter opp solsystemet vårt
 pos = system.initial_positions
 vel = system.initial_velocities 
 starmass = system.star_mass
-timesteps = 20 * 10_000
-dt = 1/10_000
+
+
+yearlen = system.semi_major_axes[0]**3/2
+timesteps_per_year = 10_000
+dt = yearlen/(timesteps_per_year)
+timesteps = round(20 * timesteps_per_year)
 
 @jit
 def solve(index):
