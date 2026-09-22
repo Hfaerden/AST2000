@@ -19,9 +19,9 @@ starmass = system.star_mass #Henter solmassen vår
 
 yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden på et år i jordår, ved Kepler's tredje
 print(yearlen)
-timesteps_per_year = 10_000 #Setter hvor mange tidssteg per år 
+timesteps_per_year = 10000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
-timesteps = round(50 * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
+timesteps = round(200 * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
 
 @jit 
 def solve(index):
@@ -44,10 +44,30 @@ def solve(index):
         y.append(y[i] + dt*vy[i+1]) #Regner it posisjonen i y retning og legger til i array 
     return([x, y]) #Returnerer x og y posisjonene 
 
+
+def kepler(pos_array, index):  
+    x = pos_array[0]
+    y = pos_array[1]
+    a = 0.5*system.semi_major_axes[index] #store halvakse
+    e = system.eccentricities[index]
+    
+    for i in range(len(x)):  #finner hvor i x og y listen apoapsis og periapsis er
+        if np.sqrt(x[i]**2 + y[i]**2) - (a-a*e) < 10**8/const.AU :
+            c = np.linalg.norm((),())
+            
+        
+
+
+
 results = []
+kepler_reslults = []
 
 for i in range(len(system.radii)):
     results.append(solve(i))
+
+for k in range(len(system.radii)):
+    kepler_reslults = kepler(results[k], k) 
+
 for j in range(len(results)):
     plt.plot(results[j][0], results[j][1])
 #plt.plot(result[0], result[1])
