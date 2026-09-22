@@ -20,7 +20,7 @@ starmass = system.star_mass #Henter solmassen vår
 yearlen = (system.semi_major_axes[0]**(3/2))/starmass #Regner ut lengden på et år i jordår, ved Kepler's tredje
 timesteps_per_year = 10_000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
-years = 20 #Setter antall år fra planeten vår vi kjører simulasjonen i
+years = 50 #Setter antall år fra planeten vår vi kjører simulasjonen i
 timesteps = round(years * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
 
 @jit 
