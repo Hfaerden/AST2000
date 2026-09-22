@@ -19,11 +19,11 @@ print(system.radii)
 for i in range(len(system.radii)): 
     r[i] = (p[i]/(1+e[i]*np.cos(f)))
 
-for i in range(len(system.radii)):
-    r[i] += system.aphelion_angles[i]
+#for i in range(len(system.radii)):
+#    r[i] += system.aphelion_angles[i]
 
 plt.axes(projection="polar")
 for j in range(len(r)):
-    plt.polar(f, r[j], label = (f"planet {j}"))
+    plt.polar(f + system.aphelion_angles[i], r[j], label = (f"planet {j}"))
 plt.show()
 
