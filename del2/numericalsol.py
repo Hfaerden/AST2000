@@ -17,11 +17,11 @@ vel = system.initial_velocities #Henter hastighetene ved t = 0
 starmass = system.star_mass #Henter solmassen vår 
 
 
-yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden på et år i jordår, ved Kepler's tredje
-print(yearlen)
+yearlen = (system.semi_major_axes[0]**(3/2))/starmass #Regner ut lengden på et år i jordår, ved Kepler's tredje
 timesteps_per_year = 10_000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
-timesteps = round(50 * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
+years = 20 #Setter antall år fra planeten vår vi kjører simulasjonen i
+timesteps = round(years * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
 
 @jit 
 def solve(index):
@@ -34,7 +34,7 @@ def solve(index):
     ay = [0]
     vx = [vel[0][index]] #lager arrays for hastighetene våre 
     vy = [vel[1][index]]
-    for i in range(timesteps - 1): #Euler-cromer loop for å regne ut aksellerasjon, posisjon, og hastighet
+    for i in range(timesteps): #Euler-cromer loop for å regne ut aksellerasjon, posisjon, og hastighet
         r = np.sqrt(x[i]**2 + y[i]**2) #Regner ut distansen fra sola 
         ax.append(abs(x[i]/(r)) * 4*np.pi**2 * -np.sign(x[i]) * starmass / (r**2)) #Regner ut aksellerasjon i x retning og legger til i array
         ay.append(abs(y[i]/(r)) * 4*np.pi**2 * -np.sign(y[i]) * starmass / (r**2)) #Regner ut aksellerasjon i y retning og legger til i array
@@ -45,11 +45,10 @@ def solve(index):
     return([x, y]) #Returnerer x og y posisjonene 
 
 results = []
-
+plt.figure(figsize=(5, 5))
 for i in range(len(system.radii)):
     results.append(solve(i))
 for j in range(len(results)):
     plt.plot(results[j][0], results[j][1])
 #plt.plot(result[0], result[1])
-print(len(system.radii))
 plt.show()
