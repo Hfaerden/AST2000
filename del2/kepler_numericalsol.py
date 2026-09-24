@@ -2,6 +2,7 @@
 #KODEMAL ER IKKE BRUKT
 
 import numpy as np
+import scipy as sc
 import matplotlib.pyplot as plt
 from ast2000tools.space_mission import SpaceMission as SM
 from ast2000tools.solar_system import SolarSystem as SS
@@ -39,11 +40,9 @@ def solve(index):
     ay = [0]
     vx = [vel[0][index]] #lager arrays for hastighetene våre 
     vy = [vel[1][index]]
-    r_meter = np.sqrt( (x[0]**2*const.AU) + (y[0]*const.AU)**2)
-    E_tot = [ 0.5*planetmass[index]*const.m_sun*((vx[0]*const.AU/const.yr)**2+(vy[0]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/r_meter ]
-    print(const.AU/const.yr)
-    print(((vx[0]*const.AU/const.yr)**2+(vy[0]*const.AU/const.yr)**2)**0.5)
-    
+    #r_meter = np.sqrt( (x[0]**2*const.AU) + (y[0]*const.AU)**2)
+    #E_tot = [ 0.5*planetmass[index]*const.m_sun*((vx[0]*const.AU/const.yr)**2+(vy[0]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/r_meter ]
+       
     for i in range(timesteps - 1): #Euler-cromer loop for å regne ut akselerasjon, posisjon, og hastighet
         r = np.sqrt(x[i]**2 + y[i]**2) #Regner ut distansen fra sola 
         ax.append(abs(x[i]/(r)) * 4*np.pi**2 * -np.sign(x[i]) * starmass / (r**2)) #Regner ut aksellerasjon i x retning og legger til i array
@@ -53,13 +52,13 @@ def solve(index):
         x.append(x[i] + dt*vx[i+1]) #Regner ut posisjonen i x retning og legger til i array 
         y.append(y[i] + dt*vy[i+1]) #Regner it posisjonen i y retning og legger til i array 
         
-        r_meter = np.sqrt( (x[i]**2*const.AU) + (y[i]*const.AU)**2)
-        E_tot.append( 0.5*planetmass[index]*const.m_sun*((vx[i]*const.AU/const.yr)**2+(vy[i]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/(r_meter) )
+        #r_meter = np.sqrt( (x[i]**2*const.AU) + (y[i]*const.AU)**2)
+        #E_tot.append( 0.5*planetmass[index]*const.m_sun*((vx[i]*const.AU/const.yr)**2+(vy[i]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/(r_meter) )
         
         
-    return([x, y], [vx, vy], E_tot) #Returnerer x og y posisjonene , samt vx og vy
+    return([x, y], [vx, vy])#, E_tot) #Returnerer x og y posisjonene , samt vx og vy
 
-systemaph
+
 
 
 def kepler(pos_array, v_array, index):  
@@ -103,8 +102,8 @@ def kepler(pos_array, v_array, index):
     return(v_ap, v_per, A_ap, A_per, dA, l_ap, l_per)
 
 
-
-f = np.linspace(0, 2*np.pi, 100000)
+#kjører analytisk-plot for å sammenligne med numerisk
+f = np.linspace(0, 2*np.pi, 100000)     
 r = np.array(list(np.zeros(len(f)) for i in range(len(system.radii))))
 e = system.eccentricities
 a = system.semi_major_axes
@@ -138,26 +137,47 @@ kepler_results = []
 for i in range(len(system.radii)):
     results.append(solve(i))
 
+p_analytisk = []
+for i in range(len(system.radii)):  #finner analytisk omløpstid ved å se på når avstanden fra planeten til solen er størst
+    x = np.array(results[i][0][0])
+    y = np.array(results[i][0][1])
+    r = np.sqrt(x**2 + y**2)     #konverterer x og y posisjonene til avstand
+    p_analytisk.append( sc.signal.find_peaks(r) )
+print(p_analytisk)
 
-#for k in range(len(system.radii)):
-#    kepler_results.append( kepler(results[k][0], results[k][1], k) )
+deviation_yr1 = []
+deviation_tend = []
+for i in range(len(system.radii)):      #Sjekker for forskjeller i periodene mellom Kepler og Newton
+    print(system.semi_major_axes)
+    deviation_yr1.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][0]*dt)**2 - system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3 )
+    deviation_tend.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][0]*dt)**2 - system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3 )
 
+for k in range(len(system.radii)):  #Løser for arealet sveipet ut av planetene
+    kepler_results.append( kepler(results[k][0], results[k][1], k) )
+
+labels = ['planet 1','planet 2','planet 3','planet 4','planet 5','planet 6','planet 7', 'planet 8' ]
 for j in range(len(system.radii)):
-    plt.plot(results[j][0][0], results[j][0][1])
-    plt.plot(x_analytisk[j], y_analytisk[j], linestyle="dashed")
+    plt.plot(results[j][0][0], results[j][0][1], label=labels[j])
+    plt.plot(x_analytisk[j], y_analytisk[j], color = "b", linestyle="dashed")
 
 print(len(system.radii))
+plt.title("Planetenes baner, analytisk og numerisk")
+plt.xlabel('x-posisjon i AU')
+plt.ylabel('y-posisjon i AU')
+plt.axis('square')
+plt.grid(True)
+plt.legend()
 plt.show()
 
 #for h in range(len(results)):
 #    plt.plot( np.linspace(0, t_end, timesteps), results[h][2])
 
-#for l in range(len(results)):
+for l in range(len(results)):
 #    plt.plot(np.linspace(0 , 1000/dt, 1000) , np.array(kepler_results[l][3][0:1000:1])-np.array(kepler_results[l][2][0:1000:1]))
-    
-#    print(f'ratio på arealet = {kepler_results[l][4]}')
-#    print(f'planet med index {l} har gjennomsnittlig fart på {kepler_results[l][0]}AU/yr ved apoapsen og {kepler_results[l][1]}AU/yr ved periapsen')
-#    print(f'planet med index {l} dro {kepler_results[l][5]}AU for å spanne ut arealet ved apoapsen, og {kepler_results[l][5]}AU for samme arealet ved periapsen')
+    print(f'forskjell i omløpstid fra forventet i prosent for planet{l} er ved år 1 {deviation_yr1[l]} og ved slutten {deviation_tend[l]}')
+    print(f'ratio på arealet = {kepler_results[l][4]}')
+    print(f'planet med index {l} har gjennomsnittlig fart på {kepler_results[l][0]}AU/yr ved apoapsen og {kepler_results[l][1]}AU/yr ved periapsen')
+    print(f'planet med index {l} dro {kepler_results[l][5]}AU for å spanne ut arealet ved apoapsen, og {kepler_results[l][5]}AU for samme arealet ved periapsen')
 #plt.show()
 
 
