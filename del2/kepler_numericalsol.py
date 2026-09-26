@@ -149,8 +149,8 @@ deviation_yr1 = []
 deviation_tend = []
 for i in range(len(system.radii)):      #Sjekker for forskjeller i periodene mellom Kepler og Newton
     print(system.semi_major_axes)
-    deviation_yr1.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][0]*dt)**2 - system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3 )
-    deviation_tend.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][0]*dt)**2 - system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3 )
+    deviation_yr1.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) )/ (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )
+    deviation_tend.append( abs((p_analytisk[i][0][-1]*dt-p_analytisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ) / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )
 
 for k in range(len(system.radii)):  #Løser for arealet sveipet ut av planetene
     kepler_results.append( kepler(results[k][0], results[k][1], k) )
@@ -161,7 +161,7 @@ for j in range(len(system.radii)):
     plt.plot(x_analytisk[j], y_analytisk[j], color = "b", linestyle="dashed")
 
 print(len(system.radii))
-plt.title("Planetenes baner, analytisk og numerisk")
+plt.title("Planetenes baner, analytisk i sort og numerisk i farge")
 plt.xlabel('x-posisjon i AU')
 plt.ylabel('y-posisjon i AU')
 plt.axis('square')
