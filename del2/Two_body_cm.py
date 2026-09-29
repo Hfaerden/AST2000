@@ -14,7 +14,7 @@ seed = utils.get_seed('natanies')
 mission = SM(seed)  #setter opp mission-raketten
 system = SS(seed)   #setter opp solsystemet v책rt
 
-k = 5 #planet nr 5
+k = 4 #planet nr 5
 pos = system.initial_positions #Henter posisjonen ved t = 0
 vel = system.initial_velocities #Henter hastigheten ved t = 0
 starmass = system.star_mass #Henter solmassen v책r 
@@ -27,7 +27,7 @@ yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden p책 et 책r i jord�
 timesteps_per_year = 10000 #Setter hvor mange tidssteg per 책r 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og 책rlengden
 #print(d++t)
-t_end = 40
+t_end = 100
 timesteps = round(t_end * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for t 책r
 
 CM = planetmass*p_pos/(starmass+planetmass)     #Finner posisjon og hastighet til CM
@@ -35,7 +35,7 @@ CMvx = float(planetmass*vel[0][k]/(starmass+planetmass))
 CMvy = float(planetmass*vel[1][k]/(starmass+planetmass))
 
 v_s = [float(-CMvx), float(-CMvy)]      #Konverterer til CM-ref systemet
-v_p = [ [float(vel[0][k]-CMvx)], [float(vel[1][k]-CMvy)] ]
+v_p = [float(vel[0][k]-CMvx), float(vel[1][k]-CMvy) ]
 p_pos -= CM
 s_pos = -CM
 print(CMvx, CMvy)
@@ -92,5 +92,18 @@ print(v_p[1])
 results = solve(p_pos[0], p_pos[1], s_pos[0], s_pos[1], v_p[0], v_p[1],  v_s[0], v_s[1])
 plt.plot(results[0][0][0], results[0][0][1])
 plt.plot(results[1][0][0], results[1][0][1])
+plt.title('To-legemet systemet, med planet nr 5')
+plt.xlabel('x-posisjon i AU')
+plt.ylabel('y-posisjon i AU')
+plt.axis('square')
+plt.grid(True)
+plt.legend()
 plt.show()
+
+np.array(results[1][1][0])
+
+plt.plot( np.linspace(0, t_end, timesteps), results[1][1][0] )
+plt.show()
+
+
 
