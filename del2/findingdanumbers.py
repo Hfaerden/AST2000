@@ -27,5 +27,8 @@ for i in range(len(system.radii)):
 plt.axes(projection="polar")
 for j in range(len(r)):
     plt.polar(f, r[j], label = (f"planet {j}"))
+
+plt.title("Planetenes bane rundt solen")
+plt.legend()
 plt.show()
 

@@ -33,11 +33,14 @@ timesteps = round(t_end * timesteps_per_year) #Regner ut hvor mange tidssteg vi 
 def solve(index):
     x1 = pos[0][index] #Henter posisjonene ved t = 0
     y1 = pos[1][index]
-    ax1 = -(4*np.pi**2 * starmass / (x1**2+y1**2)) #Regner ut aksellerasjonen ved t = 0, merk at y = 0, og dermed ser uttrykket annerledes ut
+    r = 0
+    r = (x1**2 + y1**2)**0.5
+    ax1 = -(abs(x1/(r)) * 4*np.pi**2 * -np.sign(x1) * starmass / (r**2)) #Regner ut aksellerasjonen ved t = 0
+    ay1 = -(abs(y1/(r)) * 4*np.pi**2 * -np.sign(y1) * starmass / (r**2))
     x = [x1]
     y = [y1] #Lager arrays for poisjonene våre 
     ax = [ax1]
-    ay = [0]
+    ay = [ay1]
     vx = [vel[0][index]] #lager arrays for hastighetene våre 
     vy = [vel[1][index]]
     #r_meter = np.sqrt( (x[0]**2*const.AU) + (y[0]*const.AU)**2)
@@ -115,19 +118,11 @@ for i in range(len(system.radii)):
     f_i = f + (np.pi-system.aphelion_angles[i])
     r[i] = (p[i]/(1+e[i]*np.cos(f_i)))
 
-#for i in range(len(system.radii)):
-#    r[i] += system.aphelion_angles[i]
 
-for i in range(len(system.radii)):
+
+for i in range(len(system.radii)):  #konverterer de analytiske til x og y koordinater
     x_analytisk.append( list(r[i]*np.cos(f)) )
     y_analytisk.append( list(r[i]*np.sin(f)) )
-#print(x_analytisk)
-#print(y_analytisk)
-
-#plt.axes(projection="polar")
-#for j in range(len(r)):
-#    plt.polar(f, r[j], label = (f"planet {j}"))
-#plt.show()
 
 
 
@@ -136,6 +131,8 @@ kepler_results = []
 
 for i in range(len(system.radii)):
     results.append(solve(i))
+
+print(np.shape(results))
 
 p_analytisk = []
 for i in range(len(system.radii)):  #finner analytisk omløpstid ved å se på når avstanden fra planeten til solen er størst
@@ -149,8 +146,10 @@ deviation_yr1 = []
 deviation_tend = []
 for i in range(len(system.radii)):      #Sjekker for forskjeller i periodene mellom Kepler og Newton
     print(system.semi_major_axes)
-    deviation_yr1.append( abs((p_analytisk[i][0][0]*dt-p_analytisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) )/ (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )
-    deviation_tend.append( abs((p_analytisk[i][0][-1]*dt-p_analytisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ) / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )
+    number_deviation = (abs(( p_analytisk[i][0][0]*dt-p_analytisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))    #Bruker Newtons korrigerte versjon av Keplers for å sjekke forskellen mellom analytisk og numerisk
+    deviation_yr1.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )   #Finner forskjellen som et forhold
+    number_deviation = (abs(( p_analytisk[i][0][-1]*dt-p_analytisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))  #gjør dette både ved starten og ved slutten
+    deviation_tend.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )  
 
 for k in range(len(system.radii)):  #Løser for arealet sveipet ut av planetene
     kepler_results.append( kepler(results[k][0], results[k][1], k) )
@@ -158,7 +157,7 @@ for k in range(len(system.radii)):  #Løser for arealet sveipet ut av planetene
 labels = ['planet 1','planet 2','planet 3','planet 4','planet 5','planet 6','planet 7', 'planet 8' ]
 for j in range(len(system.radii)):
     plt.plot(results[j][0][0], results[j][0][1], label=labels[j])
-    plt.plot(x_analytisk[j], y_analytisk[j], color = "b", linestyle="dashed")
+    plt.plot(x_analytisk[j], y_analytisk[j], color = "black", linestyle="dashed")
 
 print(len(system.radii))
 plt.title("Planetenes baner, analytisk i sort og numerisk i farge")
@@ -174,14 +173,14 @@ plt.show()
 
 for l in range(len(results)):
 #    plt.plot(np.linspace(0 , 1000/dt, 1000) , np.array(kepler_results[l][3][0:1000:1])-np.array(kepler_results[l][2][0:1000:1]))
-    print(f'forskjell i omløpstid fra forventet i prosent for planet{l} er ved år 1 {deviation_yr1[l]} og ved slutten {deviation_tend[l]}')
+    print(f'forskjell i omløpstid fra forventet for planet{l} er ved år 1 {deviation_yr1[l]} og ved slutten {deviation_tend[l]}')
     print(f'ratio på arealet = {kepler_results[l][4]}')
     print(f'planet med index {l} har gjennomsnittlig fart på {kepler_results[l][0]}AU/yr ved apoapsen og {kepler_results[l][1]}AU/yr ved periapsen')
     print(f'planet med index {l} dro {kepler_results[l][5]}AU for å spanne ut arealet ved apoapsen, og {kepler_results[l][5]}AU for samme arealet ved periapsen')
 #plt.show()
 
 
-
+system.verify_planet_positions(t_end, results[:,][:0])
 
 
 

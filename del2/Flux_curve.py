@@ -28,12 +28,12 @@ print(system.radii)
 
 F_eclipse = (r_s**2-radius**2)/r_s**2   #finner fluksen som sett av en observatør lang unna i ratio der 1 er fluksen til den udekkede stjernen
 values = np.ones(round( (2*r_s-4*radius)/(v_p*dt) ))     #lager en stund der solen er udekket
-values = values*np.random.normal( 1, 0.001, len(values) )
+values = values*np.random.normal( 1, 10**(-4), len(values) )
 values = np.append(values, np.linspace( 1, F_eclipse, round((2*radius)/(v_p*dt))) ) #finner tiden planeten tar å krysse fra delvis formørkelse til total
 values = np.append(values, np.ones(round((2*r_s-4*radius)/(v_p*dt)))*F_eclipse )    #Legger til verdiene fluksen får i antall dt det tar å krysse fra ene siden av sole til den andre
 values = np.append(values, np.linspace( F_eclipse, 1, round((2*radius)/(v_p*dt))) )  #samme som to linjer over, bare omvendt
 values = np.append(values, np.ones(round( (2*r_s-4*radius)/(v_p*dt) )))  #lager en stund der solen er udekket
-values = values * np.random.normal( 1, 0.001, len(values) )     #legger til gausisk støy
+values = values + np.random.normal( 0, 10**(-4), len(values) )     #legger til gausisk støy
 
 plt.plot( np.linspace(0, len(values), len(values)) , values )
 plt.show()
