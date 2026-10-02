@@ -42,14 +42,16 @@ M=0
 for i in range(len(k)):
     M +=float(planetmass[i])
 
-M += float(starmass)
-mu = (planetmass[0]*planetmass[1]*planetmass[2]*starmass)/(M)
-G = 4*np.pi**2
+M += float(starmass)    #finner totalmasse
+#mu = (planetmass[0]*planetmass[1]*planetmass[2]*starmass)/(M)
+G = float(4*np.pi**2)
 
 #print(p_pos)
-CM = np.array([(planetmass[0]*p_pos[0] + planetmass[1]*p_pos[1] + planetmass[2]*p_pos[2]) / M ])    #Finner posisjon og hastighet til CM
-CMvx = float( (planetmass[0]*vel[0][0]+planetmass[1]*vel[0][1]+planetmass[2]*vel[0][2]) / M)
-CMvy = float( (planetmass[0]*vel[1][0]+planetmass[1]*vel[1][1]+planetmass[2]*vel[1][2]) / M)
+CM = (planetmass[0]*p_pos[0] + planetmass[1]*p_pos[1] + planetmass[2]*p_pos[2]) / M     #Finner posisjon og hastighet til CM
+CMvx = float( (planetmass[0]*vel[0][k[0]]+planetmass[1]*vel[0][k[1]]+planetmass[2]*vel[0][k[2]]) / M)
+CMvy = float( (planetmass[0]*vel[1][k[0]]+planetmass[1]*vel[1][k[1]]+planetmass[2]*vel[1][k[2]]) / M)
+
+print(CM)
 
 v_s = [float(-CMvx), float(-CMvy)]      #Konverterer til CM-ref systemet
 v_p = [ [[],[],[]], [[],[],[]] ]
@@ -57,12 +59,14 @@ for i in range(len(k)):
     v_p[0][i].append( float(vel[0][k[i]]-CMvx) )
     v_p[1][i].append( float(vel[1][k[i]]-CMvy) )
 
+
 #print(v_p)
 
-CM = CM[0]
 #print(CM)
 s_pos = -CM
-#print(CMvx, CMvy)
+print(s_pos)
+
+print(CMvx, CMvy)
 #print(v_s)
 
 
@@ -70,8 +74,8 @@ s_pos = -CM
 
 
 
-#@jit
-def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
+#@jit #prøvde å få dette jit-bart, som er grunnen til at dette ikke er vektorisert
+def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy): #ODE-løseren for 
     x1_p, y1_p = pos_px, pos_py    #Henter posisjonene ved t = 0 som en liste
     x1_s, y1_s = pos_sx, pos_sy
     ax_p, ay_p = [[],[],[]], [[],[],[]]     #setter opp nøstede lister for akselerasjonene våre
@@ -80,10 +84,13 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
     
     
     for i in range(len(k)):
-        r = float(np.sqrt((x1_p[i][0]-x1_s)**2 + (y1_p[i][0]-y1_s)**2))    #relative posisjonen 
-        ax_p[i].append(float( -((x1_p[i][0]-x1_s) * 4*np.pi**2 * starmass / (r**3) ) ))
-        print(ax_p)
-        ay_p[i].append(float( -((y1_p[i][0]-y1_s) * 4*np.pi**2 * starmass / (r**3) ) ))    #Regner ut aksellerasjonen ved t = 0
+        
+        rx_p2s = (x1_p[i][0]-x1_s)  #relativ posisjon i x-retning
+        ry_p2s = (y1_p[i][0]-y1_s)  #relativ posisjon i y-retning        
+        r = float(np.sqrt((rx_p2s)**2 + (ry_p2s)**2))    #relative posisjonen 
+        
+        ax_p[i].append(float( -(rx_p2s * 4*np.pi**2 * starmass / (r**3) ) )) #Regner ut aksellerasjonen i y ved t = 0
+        ay_p[i].append(float( -(ry_p2s * 4*np.pi**2 * starmass / (r**3) ) ))    #Regner ut aksellerasjonen i y ved t = 0
         
         asx1 += ( -(-rx_p2s * 4*np.pi**2 * planetmass[i] / (r**3) ) )
         asy1 += ( -(-ry_p2s * 4*np.pi**2 * planetmass[i] / (r**3) ) )
@@ -108,9 +115,10 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
 
         for j in range(len(k)):     #løper gjennom for hver planet i simulasjonen
             #print(x_p)
-            r = float(np.sqrt((x_p[j][i]-x_s[i])**2 + (y_p[j][i]-y_s[i])**2))
             rx_p2s = (x_p[j][i]-x_s[i])
-            ry_p2s = (y_p[j][i]-y_s[i])
+            ry_p2s = (y_p[j][i]-y_s[i])            
+            r = float(np.sqrt(rx_p2s**2 + ry_p2s**2))
+
             #print(rx_p2s, ry_p2s)
             #break
             #print(r)
@@ -140,21 +148,28 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
         
         
         
-    return([[x_p, y_p], [vx_p, vy_p]], [[x_s, y_s], [vx_s, vy_s]])#, E) #Returnerer x og y posisjonene , samt vx og vy, og totalenergien
+    return [[x_p, y_p], [vx_p, vy_p]], [[x_s, y_s], [vx_s, vy_s]] #, E) #Returnerer x og y posisjonene , samt vx og vy, og totalenergien
 
 
-print(v_p)
-print(v_p[1])
-px_format, py_format = [ [p_posx[0]], [p_posx[1]], [p_posx[2]] ], [[p_posy[0]], [p_posy[1]], [p_posy[2]]]
+#print(v_p)
+#print(v_p[1])
+px_format, py_format = [ [float(p_posx[0]-CM[0])], [float(p_posx[1]-CM[0])], [float(p_posx[2]-CM[0])] ], [ [float(p_posy[0]-CM[1])], [float(p_posy[1]-CM[1])], [float(p_posy[2]-CM[1])] ]
 p_pos = [ px_format , py_format]
+print(p_pos)
 vx_format, vy_format = 1, 1
 
 #print(p_pos)
-results = solve(p_pos[0], p_pos[1], s_pos[0], s_pos[1], v_p[0], v_p[1],  v_s[0], v_s[1])
+results = solve(p_pos[0], p_pos[1], float(s_pos[0]), float(s_pos[1]), v_p[0], v_p[1],  v_s[0], v_s[1])
+
+CMx = (planetmass[0]*results[0][0][0][0][-1] + planetmass[1]*results[0][0][0][1][-1] + planetmass[2]*results[0][0][0][2][-1]) / M 
+CMy = (planetmass[0]*results[0][0][1][0][-1] + planetmass[1]*results[0][0][1][1][-1] + planetmass[2]*results[0][0][1][2][-1]) / M 
+print(np.sqrt(CMy**2+CMx**2))
 
 for i in range(len(k)):
     plt.plot(results[0][0][0][i], results[0][0][1][i], label='planet')
     
+
+
 plt.plot(results[1][0][0], results[1][0][1], label='Stjernen')
 plt.title('n-legemet systemet, med planet nr 4, 5 og 6')
 plt.xlabel('x-posisjon i AU')
@@ -174,17 +189,18 @@ print(peak_diff)
 
 plt.plot(np.linspace(0, t_end, timesteps), E_deviation )
 plt.show()
-
-vel_curve = np.array(results[1][1][0])
+'''
+vel_curve = np.array(results[0][1][1][0])
 vel_curve += np.random.normal(0, 0.2*np.max(vel_curve), len(vel_curve))    #legger til støy lik 1/5 av den største verdien
 peculiar_vel = 0.1
 vel_curve += peculiar_vel #legger til hastigheten til CM som sett fra observatøren
-'''
-'''
+
+
 plt.plot( np.linspace(0, t_end, timesteps), vel_curve )
 plt.title('radiell hastighet')
 plt.xlabel('tid i år')
 plt.ylabel('hastighet i AU/yr')
 plt.grid(True)
 plt.show()
-'''
+
+

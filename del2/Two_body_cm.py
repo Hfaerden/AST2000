@@ -115,13 +115,16 @@ plt.legend()
 plt.show()
 
 
-'''E = np.array(results[-1])
+E = np.array(results[-1])
 E_mean = np.mean(E)
 E_deviation = (abs(E/E_mean - 1))*100
 peaks = sc.signal.find_peaks(E)
 peak_diff = abs(peaks[0][0]-peaks[0][-1])/(peaks[0][0]+peaks[0][-1])
-print(peak_diff)
+print(f'største forskjellen i analytisk og simulert energi i prosent er {peak_diff}')
 
+plt.title('prosent avvik mellom analytisk og simulert energi over tid')
+plt.xlabel('tid i år')
+plt.ylabel('prosent')
 plt.plot(np.linspace(0, t_end, timesteps), E_deviation )
 plt.show()
 
@@ -129,14 +132,13 @@ vel_curve = np.array(results[1][1][0])
 vel_curve += np.random.normal(0, 0.2*np.max(vel_curve), len(vel_curve))    #legger til støy lik 1/5 av den største verdien
 peculiar_vel = 0.1
 vel_curve += peculiar_vel #legger til hastigheten til CM som sett fra observatøren
-'''
-'''
-plt.plot( np.linspace(0, t_end, timesteps), vel_curve )
-plt.title('radiell hastighet')
+
+plt.plot( np.linspace(0, t_end, timesteps), vel_curve, label = 'radiell hastighet')
+plt.title('radiell hastighet i forhold til en observatør med i = pi/2')
 plt.xlabel('tid i år')
 plt.ylabel('hastighet i AU/yr')
 plt.grid(True)
 plt.show()
-'''
+
 
 
