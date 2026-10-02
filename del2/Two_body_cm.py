@@ -22,7 +22,7 @@ planetmass = system.masses[k]
 p_pos = np.array([system.initial_positions[0][k], system.initial_positions[1][k]])
 #print(p_pos)
 
-yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden på et år i jordår, ved Kepler's tredje
+yearlen = (system.semi_major_axes[0]**(3)/(system.masses[0]+system.star_mass) )**0.5 #Regner ut lengden på et år i jordår, ved Kepler's tredje
 #print(yearlen)
 timesteps_per_year = 10000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden

@@ -21,7 +21,7 @@ vel = system.initial_velocities #Henter hastighetene ved t = 0
 starmass = system.star_mass #Henter solmassen vår 
 planetmass = system.masses
 
-yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden på et år i jordår, ved Kepler's tredje
+yearlen = (system.semi_major_axes[0]**(3)/(system.masses[0]+system.star_mass) )**0.5 #Regner ut lengden på et år i jordår, ved Kepler's tredje
 #print(yearlen)
 timesteps_per_year = 10000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
@@ -113,7 +113,7 @@ a = system.semi_major_axes
 p = a*(1-e**2)
 x_analytisk =  []
 y_analytisk = []
-print(system.radii)
+#print(system.radii)
 for i in range(len(system.radii)):
     f_i = f + (np.pi-system.aphelion_angles[i])
     r[i] = (p[i]/(1+e[i]*np.cos(f_i)))
@@ -132,7 +132,7 @@ kepler_results = []
 for i in range(len(system.radii)):
     results.append(solve(i))
 
-print(np.shape(results))
+#print(np.shape(results))
 
 p_analytisk = []
 for i in range(len(system.radii)):  #finner analytisk omløpstid ved å se på når avstanden fra planeten til solen er størst
@@ -140,17 +140,20 @@ for i in range(len(system.radii)):  #finner analytisk omløpstid ved å se på n
     y = np.array(results[i][0][1])
     r = np.sqrt(x**2 + y**2)     #konverterer x og y posisjonene til avstand
     p_analytisk.append( sc.signal.find_peaks(r) )
-print(p_analytisk)
+#print(p_analytisk)
 
 deviation_yr1 = []
 deviation_tend = []
+diff_newton_kepler = []
 for i in range(len(system.radii)):      #Sjekker for forskjeller i periodene mellom Kepler og Newton
-    print(system.semi_major_axes)
+    #print(system.semi_major_axes)
     number_deviation = (abs(( p_analytisk[i][0][0]*dt-p_analytisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))    #Bruker Newtons korrigerte versjon av Keplers for å sjekke forskellen mellom analytisk og numerisk
     deviation_yr1.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )   #Finner forskjellen som et forhold
+    diff_newton_kepler.append(abs((number_deviation-system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3)*100)    #forskjellen mellom kepler og newton i prosent
     number_deviation = (abs(( p_analytisk[i][0][-1]*dt-p_analytisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))  #gjør dette både ved starten og ved slutten
     deviation_tend.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )  
-
+    
+    
 for k in range(len(system.radii)):  #Løser for arealet sveipet ut av planetene
     kepler_results.append( kepler(results[k][0], results[k][1], k) )
 
@@ -170,6 +173,7 @@ plt.show()
 
 #for h in range(len(results)):
 #    plt.plot( np.linspace(0, t_end, timesteps), results[h][2])
+print(f'prosent forskjell mellom Kepler og Newtons korrigerte {diff_newton_kepler}')
 
 for l in range(len(results)):
 #    plt.plot(np.linspace(0 , 1000/dt, 1000) , np.array(kepler_results[l][3][0:1000:1])-np.array(kepler_results[l][2][0:1000:1]))
