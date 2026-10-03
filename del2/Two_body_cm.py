@@ -126,6 +126,7 @@ plt.title('prosent avvik mellom analytisk og simulert energi over tid')
 plt.xlabel('tid i år')
 plt.ylabel('prosent')
 plt.plot(np.linspace(0, t_end, timesteps), E_deviation )
+plt.grid(True)
 plt.show()
 
 vel_curve = np.array(results[1][1][0])
