@@ -85,7 +85,7 @@ def kepler(pos_array, v_array, index):
     for j in range(ap_i-100, ap_i+100):   #beregner for posisjonene inærheten av periapsen, spesifikt dt*100 på hver side
         A_ap.append( 0.5*np.linalg.norm( np.cross((x[j], y[j], 0), (x[j+1], y[j+1], 0)) ) ) #tar kryssproduktet for å regne arealet til trekanten ved apoapsen
         v_ap.append(np.linalg.norm([ v_array[0][j], v_array[1][j] ])) #sjekker hastigheten i dette punktet
-        l_ap = v_ap[n_t_ap]*dt
+        l_ap += v_ap[n_t_ap]*dt
         n_t_ap +=1
         
     per_i = r.index(max(r))  #finner tidspunktet når planeten er nærmest solen
@@ -134,23 +134,23 @@ for i in range(len(system.radii)):
 
 #print(np.shape(results))
 
-p_analytisk = []
+p_numerisk = []
 for i in range(len(system.radii)):  #finner analytisk omløpstid ved å se på når avstanden fra planeten til solen er størst
     x = np.array(results[i][0][0])
     y = np.array(results[i][0][1])
     r = np.sqrt(x**2 + y**2)     #konverterer x og y posisjonene til avstand
-    p_analytisk.append( sc.signal.find_peaks(r) )
-#print(p_analytisk)
+    p_numerisk.append( sc.signal.find_peaks(r) )
+#print(p_numerisk)
 
 deviation_yr1 = []
 deviation_tend = []
 diff_newton_kepler = []
 for i in range(len(system.radii)):      #Sjekker for forskjeller i periodene mellom Kepler og Newton
     #print(system.semi_major_axes)
-    number_deviation = (abs(( p_analytisk[i][0][0]*dt-p_analytisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))    #Bruker Newtons korrigerte versjon av Keplers for å sjekke forskellen mellom analytisk og numerisk
+    number_deviation = (abs(( p_numerisk[i][0][0]*dt-p_numerisk[i][0][1]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))    #Bruker Newtons korrigerte versjon av Keplers for å sjekke forskellen mellom analytisk og numerisk
     deviation_yr1.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )   #Finner forskjellen som et forhold
-    diff_newton_kepler.append(abs((number_deviation-system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3)*100)    #forskjellen mellom kepler og newton i prosent
-    number_deviation = (abs(( p_analytisk[i][0][-1]*dt-p_analytisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))  #gjør dette både ved starten og ved slutten
+    diff_newton_kepler.append(float(abs((( p_numerisk[i][0][0]*dt-p_numerisk[i][0][1]*dt)**2 -system.semi_major_axes[i]**3)/system.semi_major_axes[i]**3)*100))   #forskjellen mellom kepler og den numeriske i prosent.
+    number_deviation = (abs(( p_numerisk[i][0][-1]*dt-p_numerisk[i][0][-2]*dt)**2 - system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass) ))  #gjør dette både ved starten og ved slutten
     deviation_tend.append(number_deviation / (system.semi_major_axes[i]**3/(planetmass[i]+system.star_mass)) )  
     
     
@@ -173,14 +173,15 @@ plt.show()
 
 #for h in range(len(results)):
 #    plt.plot( np.linspace(0, t_end, timesteps), results[h][2])
-print(f'prosent forskjell mellom Kepler og Newtons korrigerte {diff_newton_kepler}')
+print(f'prosent forskjell mellom Kepler og Numeriske perioden {diff_newton_kepler}')
 
 for l in range(len(results)):
 #    plt.plot(np.linspace(0 , 1000/dt, 1000) , np.array(kepler_results[l][3][0:1000:1])-np.array(kepler_results[l][2][0:1000:1]))
     print(f'forskjell i omløpstid fra forventet for planet{l} er ved år 1 {deviation_yr1[l]} og ved slutten {deviation_tend[l]}')
     print(f'ratio på arealet = {kepler_results[l][4]}')
     print(f'planet med index {l} har gjennomsnittlig fart på {kepler_results[l][0]}AU/yr ved apoapsen og {kepler_results[l][1]}AU/yr ved periapsen')
-    print(f'planet med index {l} dro {kepler_results[l][5]}AU for å spanne ut arealet ved apoapsen, og {kepler_results[l][5]}AU for samme arealet ved periapsen')
+    print(f'planet med index {l} dro {kepler_results[l][5]}AU for å spanne ut arealet ved apoapsen, og {kepler_results[l][6]}AU for samme arealet ved periapsen')
+    print(' --- ')
 #plt.show()
 
 
