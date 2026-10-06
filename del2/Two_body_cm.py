@@ -71,31 +71,30 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
      
     for i in range(timesteps - 1): #Euler-cromer loop for å regne ut akselerasjon, posisjon, og hastighet
     
-        r = np.sqrt((x_p[i]-x_s[i])**2 + (y_p[i]-y_s[i])**2)
-        rx_p2s = (x_p[i]-x_s[i])
+        r = np.sqrt((x_p[i]-x_s[i])**2 + (y_p[i]-y_s[i])**2) #lengden fra stjernen til planeten
+        rx_p2s = (x_p[i]-x_s[i])    #komponentvis
         ry_p2s = (y_p[i]-y_s[i])
         
-        ax_p.append(-( rx_p2s * 4*np.pi**2 * starmass / (r**3) ))
+        ax_p.append(-( rx_p2s * 4*np.pi**2 * starmass / (r**3) ))   #EC for planeten
         ay_p.append(-( ry_p2s * 4*np.pi**2  * starmass / (r**3) ))
         vx_p.append(vx_p[i]+ax_p[i+1]*dt)
         vy_p.append(vy_p[i]+ay_p[i+1]*dt)
         x_p.append(x_p[i]+vx_p[i+1]*dt)
         y_p.append(y_p[i]+vy_p[i+1]*dt)
         
-        ax_s.append(-(-rx_p2s * 4*np.pi**2  * planetmass / (r**3) ))
+        ax_s.append(-(-rx_p2s * 4*np.pi**2  * planetmass / (r**3) ))    #EC for stjernen
         ay_s.append(-(-ry_p2s * 4*np.pi**2 * planetmass / (r**3) ))
         vx_s.append(vx_s[i]+ax_s[i+1]*dt)
         vy_s.append(vy_s[i]+ay_s[i+1]*dt)
         x_s.append(x_s[i]+vx_s[i+1]*dt)
         y_s.append(y_s[i]+vy_s[i+1]*dt)
         
-        U = G*M*mu/r
-        K = 0.5*mu*(x_p[0]*vx_p[0] + y_p[0]*vy_p[0] - x_s[0]*vx_s[0] + y_s[0]*vy_s[0])
+        U = G*M*mu/r    #beregner potensiell energi
+        K = 0.5*mu*(x_p[0]*vx_p[0] + y_p[0]*vy_p[0] - x_s[0]*vx_s[0] + y_s[0]*vy_s[0])  #beregner kinetisk energi
         E.append(K-U)
         
         
-        #CMx.append( mu*(x1_p-x1_s)/starmass )
-        #CMy.append( planetmass)
+
         
         
     return([[x_p, y_p], [vx_p, vy_p]], [[x_s, y_s], [vx_s, vy_s]], E) #, [CMx, CMy])#, E_tot) #Returnerer x og y posisjonene , samt vx og vy

@@ -29,6 +29,8 @@ dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og å
 t_end = 100
 timesteps = round(t_end * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for t år
 
+
+
 @jit 
 def solve(index):
     x1 = pos[0][index] #Henter posisjonene ved t = 0
@@ -47,17 +49,14 @@ def solve(index):
     #E_tot = [ 0.5*planetmass[index]*const.m_sun*((vx[0]*const.AU/const.yr)**2+(vy[0]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/r_meter ]
        
     for i in range(timesteps - 1): #Euler-cromer loop for å regne ut akselerasjon, posisjon, og hastighet
-        r = np.sqrt(x[i]**2 + y[i]**2) #Regner ut distansen fra sola 
-        ax.append(abs(x[i]/(r)) * 4*np.pi**2 * -np.sign(x[i]) * starmass / (r**2)) #Regner ut aksellerasjon i x retning og legger til i array
-        ay.append(abs(y[i]/(r)) * 4*np.pi**2 * -np.sign(y[i]) * starmass / (r**2)) #Regner ut aksellerasjon i y retning og legger til i array
-        vx.append(vx[i] + dt*ax[i+1]) #Regner ut hastighet i x retning og legger til i array
-        vy.append(vy[i] + dt*ay[i+1]) #Regner ut hastighet i y retning og legger til i array
-        x.append(x[i] + dt*vx[i+1]) #Regner ut posisjonen i x retning og legger til i array 
-        y.append(y[i] + dt*vy[i+1]) #Regner it posisjonen i y retning og legger til i array 
-        
-        #r_meter = np.sqrt( (x[i]**2*const.AU) + (y[i]*const.AU)**2)
-        #E_tot.append( 0.5*planetmass[index]*const.m_sun*((vx[i]*const.AU/const.yr)**2+(vy[i]*const.AU/const.yr)**2)**2 - const.G*starmass*planetmass[index]*const.m_sun**2/(r_meter) )
-        
+        x.append( x[i] + dt*vx[i] + 0.5*ax[i]*dt**2 ) #Regner ut posisjonen i x retning og legger til i array 
+        y.append( y[i] + dt*vy[i] + 0.5*ay[i]*dt**2)  #Regner it posisjonen i y retning og legger til i array
+        r = np.sqrt( x[i+1]**2 + y[i+1]**2 ) #Regner ut distansen fra sola
+        ax.append(abs( x[i+1]/(r)) * 4*np.pi**2 * -np.sign(x[i+1]) * starmass / (r**2) ) #Regner ut aksellerasjon i x retning og legger til i array
+        ay.append(abs( y[i+1]/(r)) * 4*np.pi**2 * -np.sign(y[i+1]) * starmass / (r**2) ) #Regner ut aksellerasjon i y retning og legger til i array
+        vx.append( vx[i] + 0.5*dt*(ax[i+1]+ax[i]) ) #Regner ut hastighet i x retning og legger til i array
+        vy.append( vy[i] + 0.5*dt*(ay[i+1]+ay[i])) #Regner ut hastighet i y retning og legger til i array
+               
         
     return([x, y], [vx, vy])#, E_tot) #Returnerer x og y posisjonene , samt vx og vy
 
@@ -99,10 +98,15 @@ def kepler(pos_array, v_array, index):
     v_ap = sum(v_ap)/n_t_ap      
     v_per = sum(v_per)/n_t_per
     
-    #finner snittratioen av A ved apoapsen og periapsen
-    dA = np.sum( np.array(A_ap) ) / np.sum(np.array(A_per)) 
+    #finner snittratioen av A ved apoapsen og periapsen i prosent
+    dA = (1 - np.sum( np.array(A_ap) ) / np.sum(np.array(A_per))) *100
     
     return(v_ap, v_per, A_ap, A_per, dA, l_ap, l_per)
+
+
+
+
+
 
 
 #kjører analytisk-plot for å sammenligne med numerisk

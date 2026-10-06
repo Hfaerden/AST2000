@@ -19,7 +19,7 @@ vel = system.initial_velocities #Henter hastighetene ved t = 0
 starmass = system.star_mass #Henter solmassen vår 
 
 
-yearlen = system.semi_major_axes[0]**(3/2) #Regner ut lengden på et år i jordår, ved Kepler's tredje
+yearlen = (system.semi_major_axes[0]**(3)/(system.masses[0]+system.star_mass) )**0.5 #Regner ut lengden på et år i jordår, ved Kepler's tredje
 print(yearlen)
 timesteps_per_year = 10000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
@@ -37,22 +37,32 @@ def solve(index):
     vx = [vel[0][index]] #lager arrays for hastighetene våre 
     vy = [vel[1][index]]
     for i in range(timesteps - 1): #Leapfrog loop for å regne ut aksellerasjon, posisjon, og hastighet
-        r = np.sqrt( x[i]**2 + y[i]**2 ) #Regner ut distansen fra sola
-        ax.append(abs( x[i]/(r)) * 4*np.pi**2 * -np.sign(x[i]) * starmass / (r**2) ) #Regner ut aksellerasjon i x retning og legger til i array
-        ay.append(abs( y[i]/(r)) * 4*np.pi**2 * -np.sign(y[i]) * starmass / (r**2) ) #Regner ut aksellerasjon i y retning og legger til i array
         x.append( x[i] + dt*vx[i] + 0.5*ax[i]*dt**2 ) #Regner ut posisjonen i x retning og legger til i array 
         y.append( y[i] + dt*vy[i] + 0.5*ay[i]*dt**2)  #Regner it posisjonen i y retning og legger til i array
+        r = np.sqrt( x[i+1]**2 + y[i+1]**2 ) #Regner ut distansen fra sola
+        ax.append(abs( x[i+1]/(r)) * 4*np.pi**2 * -np.sign(x[i+1]) * starmass / (r**2) ) #Regner ut aksellerasjon i x retning og legger til i array
+        ay.append(abs( y[i+1]/(r)) * 4*np.pi**2 * -np.sign(y[i+1]) * starmass / (r**2) ) #Regner ut aksellerasjon i y retning og legger til i array
         vx.append( vx[i] + 0.5*dt*(ax[i+1]+ax[i]) ) #Regner ut hastighet i x retning og legger til i array
         vy.append( vy[i] + 0.5*dt*(ay[i+1]+ay[i])) #Regner ut hastighet i y retning og legger til i array
 
     return([x, y]) #Returnerer x og y posisjonene 
 
 results = []
+planet = []
 
 for i in range(len(system.radii)):
     results.append(solve(i))
+    planet.append(f'planet {i}')
+
 for j in range(len(results)):
-    plt.plot(results[j][0], results[j][1])
+    plt.plot(results[j][0], results[j][1], label = planet[j] )
 #plt.plot(result[0], result[1])
 print(len(system.radii))
+plt.title("Planetenes baner, analytisk i sort og numerisk i farge")
+plt.xlabel('x-posisjon i AU')
+plt.ylabel('y-posisjon i AU')
+plt.axis('square')
+plt.grid(True)
+plt.legend()
+plt.show()
 plt.show()
