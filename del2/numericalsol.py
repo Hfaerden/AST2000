@@ -45,10 +45,13 @@ def solve(index):
     return([x, y]) #Returnerer x og y posisjonene 
 
 results = []
-plt.figure(figsize=(5, 5))
+#plt.figure(figsize=(5, 5))
+#plt.label("")
 for i in range(len(system.radii)):
     results.append(solve(i))
 for j in range(len(results)):
-    plt.plot(results[j][0], results[j][1])
-#plt.plot(result[0], result[1])
+    plt.plot(results[j][0], results[j][1], label = ("Planet " + str(j)))
+plt.title(label="Planet posisjon")
+plt.legend()
+plt.grid(True)
 plt.show()

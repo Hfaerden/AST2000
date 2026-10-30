@@ -15,7 +15,6 @@ r = np.array(list(np.zeros(len(f)) for i in range(len(system.radii))))
 e = system.eccentricities
 a = system.semi_major_axes
 p = a*(1-e**2) 
-print(system.radii)
 for i in range(len(system.radii)): 
     r[i] = (p[i]/(1+e[i]*np.cos(f)))
 
@@ -24,6 +23,8 @@ for i in range(len(system.radii)):
 
 plt.axes(projection="polar")
 for j in range(len(r)):
-    plt.polar(f + system.aphelion_angles[i], r[j], label = (f"planet {j}"))
+    plt.polar(f + system.aphelion_angles[j], r[j], label = (f"planet {j+1}"))
+plt.title("Planet posisjoner", size = 35)
+plt.legend()
 plt.show()
 
