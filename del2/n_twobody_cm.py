@@ -149,7 +149,7 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy): #ODE-løseren
         
         
         
-    return [[x_p, y_p], [vx_p, vy_p]], [[x_s, y_s], [vx_s, vy_s]] #, E) #Returnerer x og y posisjonene , samt vx og vy, og totalenergien
+    return [ [[x_p, y_p], [vx_p, vy_p]], [[x_s, y_s], [vx_s, vy_s]] ] #, E) #Returnerer x og y posisjonene , samt vx og vy, og totalenergien
 
 
 #print(v_p)
@@ -167,7 +167,7 @@ CMy = (planetmass[0]*results[0][0][1][0][-1] + planetmass[1]*results[0][0][1][1]
 print(np.sqrt(CMy**2+CMx**2))
 
 for i in range(len(k)):
-    plt.plot(results[0][0][0][i], results[0][0][1][i], label='planet')
+    plt.plot(results[0][0][0][i], results[0][0][1][i], label=f'planet{k[i]}')
     
 
 
@@ -191,7 +191,7 @@ print(peak_diff)
 plt.plot(np.linspace(0, t_end, timesteps), E_deviation )
 plt.show()
 '''
-vel_curve = np.array(results[0][1][1][0])
+vel_curve = np.array(results[1][0][0])
 vel_curve += np.random.normal(0, 0.2*np.max(vel_curve), len(vel_curve))    #legger til støy lik 1/5 av den største verdien
 peculiar_vel = 0.1
 vel_curve += peculiar_vel #legger til hastigheten til CM som sett fra observatøren

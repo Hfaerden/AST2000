@@ -24,10 +24,10 @@ p_pos = np.array([system.initial_positions[0][k], system.initial_positions[1][k]
 
 yearlen = (system.semi_major_axes[0]**(3)/(system.masses[0]+system.star_mass) )**0.5 #Regner ut lengden på et år i jordår, ved Kepler's tredje
 #print(yearlen)
-timesteps_per_year = 10000 #Setter hvor mange tidssteg per år 
+timesteps_per_year = 100000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
 #print(d++t)
-t_end = 1000
+t_end = 100
 timesteps = round(t_end * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for t år
 
 
@@ -90,7 +90,7 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
         y_s.append(y_s[i]+vy_s[i+1]*dt)
         
         U = G*M*mu/r    #beregner potensiell energi
-        K = 0.5*mu*(x_p[0]*vx_p[0] + y_p[0]*vy_p[0] - x_s[0]*vx_s[0] + y_s[0]*vy_s[0])  #beregner kinetisk energi
+        K = 0.5*mu*(x_p[i+1]*vx_p[i+1] + y_p[i+1]*vy_p[i+1] - x_s[i+1]*vx_s[i+1] - y_s[i+1]*vy_s[i+1])  #beregner kinetisk energi
         E.append(K-U)
         
         
@@ -103,7 +103,7 @@ def solve(pos_px, pos_py, pos_sx, pos_sy, v_px, v_py, v_sx, v_sy):
 print(v_p[0])
 print(v_p[1])
 results = solve(p_pos[0], p_pos[1], s_pos[0], s_pos[1], v_p[0], v_p[1],  v_s[0], v_s[1])
-plt.plot(results[0][0][0], results[0][0][1], label= 'Planet nr 5' )
+plt.plot(results[0][0][0], results[0][0][1], label= 'Planet nr 8' )
 plt.plot(results[1][0][0], results[1][0][1], label= 'Stjernen' )
 plt.title('To-legemet systemet, med planet nr 5')
 plt.xlabel('x-posisjon i AU')
