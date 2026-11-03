@@ -13,7 +13,6 @@ system = SS(seed)   #setter opp solsystemet vårt
 
 Hspectral = 656.3
 c = const.c
-
 angles = mission.star_direction_angles
 dopplershifts = mission.star_doppler_shifts_at_sun
 
@@ -31,6 +30,7 @@ for i in (dopplershifts):
 def referencevelocity(lam1, lam2, phi1, phi2):
     v1 = velocityfind(lam1)
     v2 = velocityfind(lam2)
+    print(phi1, phi2)
     matrix = np.array([np.sin(phi2), -np.sin(phi1)], [-np.cos(phi2), np.cos(phi1)])
     return(1/(np.sin(phi2-phi1)) * (matrix @ [v1,v2]))
 
