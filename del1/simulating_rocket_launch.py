@@ -100,6 +100,7 @@ f_box = model.Forcez
 partikkel_masse = 3.36*10**(-27)
 
 F = n_box*f_box        #kraften som motoren vår gir
+print(f'force ={F} ')
 fuel_cons = (373785*partikkel_masse/10**(-9) )*n_box   #hvor mye drivstoff raketten bruker pr sekund
 print(fuel_cons)
 fuel = 11000        #hvor mye drivstoff vi har med oss

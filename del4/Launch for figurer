@@ -1,0 +1,26 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from ast2000tools.space_mission import SpaceMission as SM
+from ast2000tools.solar_system import SolarSystem as SS
+import ast2000tools.constants as const
+import ast2000tools.utils as utils
+from numba import jit 
+from wherearewe import plot_circle
+from wherearewe import runsim
+
+seed = utils.get_seed('natanies')
+
+mission = SM(seed)  #setter opp mission-raketten
+system = SS(seed)   #setter opp solsystemet vårt
+t = 0
+dt = 0.005
+F = 128060
+fuel_cons = 20.0946816
+fuel = 11000
+theta = np.pi
+r_position = runsim(t, 0) + system.radii(0)*np.array(np.cos(theta), np.sin(theta) )
+
+mission.set_launch_parameters(F, fuel_cons, fuel, 10000, r_position,  t)
+mission.launch_rocket(dt)
+mission.get_launch_results(33759) #snarvei fra del 3
+
