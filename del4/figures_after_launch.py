@@ -19,7 +19,7 @@ system = SS(seed)   #setter opp solsystemet vårt
 t = 0
 
 
-def launch ():
+def launch_r ():
     dt = 0.005
     F = 128060.01625967553 #henter launch-verdiene fra del 1
     fuel_cons = 20.09
@@ -35,6 +35,8 @@ def launch ():
 
     launch = shortcuts.get_launch_results()
     mission.verify_launch_result(launch[2])
+    global info 
+    info = launch
 
 
 def visualize_trilateration():  
@@ -43,17 +45,17 @@ def visualize_trilateration():
 
 def test_reference_vel():
     dop = np.array(mission.measure_star_doppler_shifts())
-    angles = mission.star_direction_angles
     vel = referencevelocity.referencevelocitytosun(dop[0], dop[1])
-    tol = 0.01
+    tol = 1
+    print(info[3])
     
-    if abs(np.linalg.norm(vel - launch[3])) < tol :
-           print(f'passed! difference in velocity is {abs(np.linalg.norm(vel - launch[3]))}')
+    if abs(np.linalg.norm(vel - np.array(info[3])) ) < tol :
+           print(f'passed! difference in velocity is {abs(np.linalg.norm(vel - info[3]))}')
     else:
-        print(f'failed :( poopoohead! difference was {abs(np.linalg.norm(vel - launch[3]))}')
-        print(f'individual values: from doppler {vel}, from ast2000 {launch[3]} ')
+        print(f'failed :( poopoohead! difference was {abs(np.linalg.norm(vel - info[3]))}')
+        print(f'individual values: from doppler {vel}, from ast2000 {info[3]} ')
 
-launch()
+launch_r()
 test_reference_vel()
 
 

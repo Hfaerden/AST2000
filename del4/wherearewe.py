@@ -72,7 +72,7 @@ def plot_circle (time, measurements):
     #finner posisjonen for planetene vi vil ha for den tiden:
     x = [ 0, runsim(time, 0)[0], runsim(time, 1)[0] ]
     y = [ 0, runsim(time, 0)[1], runsim(time, 1)[1] ]
-    n = 1000 #oppløsning på sirkelen
+    n = 10000 #oppløsning på sirkelen
     meas = [measurements[-1], measurements[0], measurements[1]]
     
     print(meas)
