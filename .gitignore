@@ -1,0 +1,5 @@
+
+#Ignore image file
+*.png
+*.npy
+*.npz
