@@ -18,7 +18,7 @@ width, height = img.size #Henter størrelsen
 print(str(width) + "\n" + str(height)) #Printer ut størrelsen
 
 #Oppgave 2:
-print(f"x range = {width/2} \n y range = {height/2}") #Printer ut rekkevidden på X og Y rundt origo i midten av bildet
+print(f"x range = +/- {width/2} \n y range = +/- {height/2}") #Printer ut rekkevidden på X og Y rundt origo i midten av bildet
 
 #Oppgave 3:
 #Funksjon som regner ut theta og phi verdier for en gitt x og y verdi, og gitt en theta0 og phi0
@@ -67,6 +67,7 @@ def generalcase(degree):
             img.putpixel((k, (height - 1) - i), tuple(int(x) for x in (RGB[2:]))) #Setter RGB verdien i bildet. K brukt først siden x og y er reversert. minuser høyden siden PIL begynner øverst
 
     img.save(f"output {degree}.png")
+
 
 input("ADVARSEL FOR MEG SELV / NATANIEL I FREMTIDEN: Denne filen kommer til å legge 360 bilder i mappen du er i. Klikk enter for å fortsette, ctrl C for å avbryte \n -Hennie :)")
 for i in range(360):
