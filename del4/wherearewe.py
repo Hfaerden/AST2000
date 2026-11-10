@@ -29,6 +29,18 @@ def getpositions(time, index):
         yval = positions[1][index][time]
         return(xval, yval)
 
+
+def getpositions_time(time, index):
+    #henter planetbanene fra ast2000tools
+    with np.load("orbits.npz") as f:
+        times = f['times']
+        positions = f['planet_positions']
+        time = np.argmin(abs(times - time))
+        xval = positions[0][index][time]
+        yval = positions[1][index][time]
+        return (xval, yval), times[time]
+
+
 def solver(A, B, C, D, E, F):
     #regner ut x og y verdiene fra et system med to ligninger 
     matrix = np.array([ [A, B], [D, E] ])
