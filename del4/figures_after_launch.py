@@ -62,11 +62,12 @@ def test_reference_vel(info):
 
 info = launch_r()
 t = t + 492/const.yr #time after launch when we want our position
-visualize_trilateration(info)
-test_reference_vel(info)
-d = mission.measure_distances()
-print(f'diff launch-snarvei avstand til planet og measure_distance i AU: {np.linalg.norm(info[2]-wherearewe.getpositions(t, 0) ) -d[0]}')
-mission.verify_manual_orientation(wherearewe.locator(t, d), info[3], np.pi)
+#visualize_trilateration(info)
+#test_reference_vel(info)
+#d = mission.measure_distances()
+print(info[2], info[3])
+#print(f'diff launch-snarvei avstand til planet og measure_distance i AU: {np.linalg.norm(info[2]-wherearewe.getpositions(t, 0) ) -d[0]}')
+#mission.verify_manual_orientation(wherearewe.locator(t, d), info[3], np.pi)
 
 
 
