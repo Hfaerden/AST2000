@@ -23,7 +23,6 @@ def interpolation(time):
     t2, t1 = times[upper], times[lower] #Finner tidene ved indeksene til bounds 
     p1 = positions[:,:,lower] #Henter posisjonene ved tidene til bounds 
     p2 = positions[:,:,upper] 
-        
     interpolatedpositions = (p1 + (p2-p1)/(t2-t1) * (time-t1)) #Regner ut lineær interpolerte posisjoner
     return(interpolatedpositions) #Returnerer posisjonene
 
@@ -69,7 +68,9 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
         v[i+1] = (a[i+1] * dt) + v[i]
         x[i+1] = (v[i+1] * dt) + x[i]
         t[i+1] = t[i] + dt
-
+    #Returnerer posisjon
     return((starttime + timestepsN * dt), x[-1], v[-1])
 
-print(webemovin(0.3, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 1/(100_000)))
+#Tester funksjon med verdier fra etter launch
+print(webemovin(0.3, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
+
