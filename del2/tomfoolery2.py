@@ -22,7 +22,7 @@ yearlen = (system.semi_major_axes[0]**(3)/(system.masses[0]+system.star_mass) )*
 print(yearlen)
 timesteps_per_year = 30_000 #Setter hvor mange tidssteg per år 
 dt = yearlen/(timesteps_per_year) #Regner ut tidsintervalet vi skal ved dt og årlengden
-years = 100 #Setter antall år fra planeten vår vi kjører simulasjonen i
+years = 0 #Setter antall år fra planeten vår vi kjører simulasjonen i
 timesteps = round(years * timesteps_per_year) #Regner ut hvor mange tidssteg vi trenger totalt for 20 år 
 
 @jit 

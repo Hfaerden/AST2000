@@ -44,16 +44,28 @@ def locator(time, measurements):
     (x, y) = solver(A, B, C, D, E, F)
     return(x, y)
 
+<<<<<<< Updated upstream
 def plot_circle (time, measurements):
+=======
+
+
+def plot_circle (time, measurements, rocketpos):
+>>>>>>> Stashed changes
     #her er measurements en 1d array med tre verdier
     #finner posisjonen for planetene vi vil ha for den tiden:
     x = [ 0, getpositions(time, 0)[0], getpositions(time, 1)[0] ]
     y = [ 0, getpositions(time, 0)[1], getpositions(time, 1)[1] ]
     n = 1000 #oppløsning på sirkelen
     meas = [measurements[-1], measurements[0], measurements[1]]
+<<<<<<< Updated upstream
     
     print(meas)
     
+=======
+    calc_pos = locator(time, measurements)
+    #print(meas)
+    '''
+>>>>>>> Stashed changes
     for i in range(len(x)):
         #lager sirkler med sentrum og radius til korresponderende planeter
         R_x = meas[i]*np.cos( np.linspace(0, 2*np.pi, n) ) + x[i]
@@ -61,12 +73,23 @@ def plot_circle (time, measurements):
         plt.plot(R_x, R_y)
         plt.legend(f'sirkel til objekt {i}')
         plt.grid(True)
-    
+    '''
     for i in range(len(x)):
         plt.plot(x[i], y[i], 'ro')
+<<<<<<< Updated upstream
         plt.legend(f'objekt {i}')
         plt.axis('square')
     
+=======
+        #plt.legend(f'objekt {i}')
+        
+        
+    #plt.plot(rocketpos[0], rocketpos[1], 'bo')
+    #plt.plot(calc_pos[0], calc_pos[1],'ko')
+    plt.axis('square')
+    plt.xlabel('avstand i AU')
+    plt.ylabel('avstand i AU')
+>>>>>>> Stashed changes
     plt.show()
 
 print(getpositions(0, 0))
