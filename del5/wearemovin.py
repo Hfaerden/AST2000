@@ -31,13 +31,18 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
     x = np.zeros((timestepsN+1, 2))
     v = np.zeros((timestepsN+1, 2))
     a = np.zeros((timestepsN+1, 2))
+    pos = np.zeros((timestepsN+1, 2, 2))
+
 
     #Definerer startposisjon og hastighet i første element i arrays
     x[0] = np.array([startpos])
     v[0] = np.array([startv])
+    
+    #Henter initielle posisjonene til planetene
+    initpos = interpolation(starttime)
+    pos[0] = np.array([initpos[0][:2], initpos[1][:2]])
 
     #Finner aksellerasjon ved starten for x of y komponenter for hver planet 
-    initpos = interpolation(starttime)
     r0 = np.linalg.norm(initpos)
     a0comp = [(-initpos[0]/r0) * (2*np.pi)**2 * masses/(r0**2), (-initpos[1]/r0) * (2*np.pi)**2 * masses/(r0**2)]
     a0 = [np.sum(a0comp[0]), np.sum(a0comp[1])]
@@ -48,6 +53,7 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
     #definerer tidsarray
     t = np.zeros(timestepsN+1)
     t[0] = starttime
+    
 
     for i in range(timestepsN):
         #Henter posisjonene ved tiden
@@ -68,8 +74,12 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
         v[i+1] = (a[i+1] * dt) + v[i]
         x[i+1] = (v[i+1] * dt) + x[i]
         t[i+1] = t[i] + dt
+        
+        #legger posisjonene til planetene i en array
+        pos[i] = np.array([positions[0][:2], positions[1][:2]])
+        
     #Returnerer posisjon
-    return((starttime + timestepsN * dt), x[-1], v[-1])
+    return((starttime + timestepsN * dt), x, v, pos)
 
 #Tester funksjon med verdier fra etter launch
 print(webemovin(0.3, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
