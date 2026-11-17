@@ -18,8 +18,8 @@ t = 0.18
 flight_time = 0.07
 timesteps = 40000
 dt = flight_time/timesteps
-dtheta = 0.00002
-n_thetaoffsets = 200
+dtheta = 0.0001
+n_thetaoffsets = 10
 closest_point_str = []
 
 
@@ -57,6 +57,7 @@ def spaceflight(theta_offset):
         
         launch = shortcuts.get_launch_results()
         mission.verify_launch_result(launch[2])
+        print(launch[2], launch[3])
         
         return launch
     
@@ -77,6 +78,9 @@ def spaceflight(theta_offset):
     min_distance = np.min(distance_str)
     print(min_distance)
     closest_point_time = np.argmin(min_distance)*dt*timesteps + t+time_used_during_launch
+    abs_r = np.linalg.norm(trajectory[1][np.argmin(distance_str)])
+    l = abs_r * np.sqrt(system.masses[1]/(system.star_mass*10))
+    print (f'max distance for orbit insertion for our closest approach is {l}, while we are {min_distance} at closest')
     
     return min_distance, closest_point_time, trajectory, planet_positions_start, planet_positions_end
     
@@ -87,23 +91,28 @@ pos = yargh.interpolation(t)
 p1 = np.array([ pos[0][0], pos[1][0] ])
 p2 = np.array([ pos[0][1], pos[1][1] ])
     
-base_theta_offset = 1.44
+base_theta_offset = 0.620
 theta = np.arctan((p1[1]-p2[1])/(p1[0]-p2[0])) + base_theta_offset
 
 
 closest_point = []
 flights = []
 for i in range(n_thetaoffsets):
-    theta = i*dtheta
+    theta = i*dtheta + base_theta_offset
     current_flight = spaceflight(theta)
     flights.append(current_flight)
     closest_point.append(current_flight[0])
-    
-print(f'closest_point: {closest_point}')
+
+
 closest_flight_index = np.argmin(closest_point)
+distance, close_time, trajectory, planet_positions_start, planet_positions_end = flights[closest_flight_index]
+
+print(f'closest_point: {closest_point}')
 best_theta = closest_flight_index*dtheta + base_theta_offset
 print(f'best theta = {best_theta}, end theta = {base_theta_offset + dtheta*n_thetaoffsets}')
 print(np.min(closest_point))
+
+
 distance, close_time, trajectory, planet_positions_start, planet_positions_end = flights[closest_flight_index]
 
 plt.plot(trajectory[1][:, 0], trajectory[1][:, 1])
