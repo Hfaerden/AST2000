@@ -72,5 +72,9 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
     return((starttime + timestepsN * dt), x[-1], v[-1])
 
 #Tester funksjon med verdier fra etter launch
-print(webemovin(0.3, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
 
+xstart = [-0.2438, 0.1800]
+vstart = [-6.99, -7.39],
+print(webemovin(0.18, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
+
+print(xstart)
