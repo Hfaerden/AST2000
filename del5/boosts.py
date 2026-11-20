@@ -28,6 +28,16 @@ def interpolation(time):
     interpolatedpositions = (p1 + (p2-p1)/(t2-t1) * (time-t1)) #Regner ut lineær interpolerte posisjoner
     return(interpolatedpositions) #Returnerer posisjonene
 
+def findtargetplanetspeed(time):
+    upper = np.searchsorted(times, time) #Finner nærmeste indeks til input tiden, rundet opp, som en upper bound
+    lower = upper - 1 #Tar forrige indeks som lower bound 
+    t2, t1 = times[upper], times[lower] #Finner tidene ved indeksene til bounds 
+    p1 = positions[:,:,lower] #Henter posisjonene ved tidene til bounds 
+    p2 = positions[:,:,upper] 
+    interpolatedvelocity = (p2-p1)/(t2-t1) #Regner ut lineær interpolerte hastighet
+    targetplanetinterpolatedvelocity = np.array([interpolatedvelocity[0][1], interpolatedvelocity[1][1]])
+    return(targetplanetinterpolatedvelocity) #Returnerer posisjonene
+
 def webemovin(starttime, startpos, startv, timestepsN, dt, boosttime, boosts):
     #Definerer arrays for å lagre variabler
     x = np.zeros((timestepsN+1, 2))
@@ -51,7 +61,7 @@ def webemovin(starttime, startpos, startv, timestepsN, dt, boosttime, boosts):
     t = np.zeros(timestepsN+1)
     t[0] = starttime
 
-    for i in range(timestepsN):
+    for i in range(timesteps):
         #Henter posisjonene ved tiden
         positions = interpolation(t[i])
         #Regner ut r vektoren fra oss til hver planet 
@@ -64,8 +74,8 @@ def webemovin(starttime, startpos, startv, timestepsN, dt, boosttime, boosts):
         asun = [(-x[i][0]/rsun) * (2*np.pi)**2 * starmass / (rsun**2), (-x[i][1]/rsun) * (2*np.pi)**2 * starmass / (rsun**2)]
         #Regner ut total aksellerasjon
         totalac = np.array([np.sum(acomponents[0]), np.sum(acomponents[1])]) + asun
-
-        if i == 99999 and boosts != []:
+        #orbitalinjection:
+        if i == timesteps-1 and boosts != []:
             vadjust = boosts[0]
         else:
             vadjust = 0
@@ -78,16 +88,20 @@ def webemovin(starttime, startpos, startv, timestepsN, dt, boosttime, boosts):
     #Returnerer posisjon
     return((t[-1]), x[-1], v[-1])
 
-#Tester funksjon med verdier fra etter launch
+#Tester funksjon med verdier fra etter launch uten noen boosts
+
+xstart = [0.39650935, 0.15099836]
+vstart = [0.82105019, 8.63463046]
+tstart = 0.18 
+totaltime = 0.22621263993364815 - tstart 
+manualboosts = []
+manualboosttimes = []
+timesteps = 100_000
 
 xstart = [0.1709132, -0.25603277]
 vstart = [8.77556, 5.89553]
 tstart = 0.18 
-totaltime = 0.23342575 - tstart
-vstable = 13178.0451
-manualboosts = []
-manualboosttimes = []#[99_999*totaltime]
-timesteps = 100_000
+totaltime = 0.23342575 * 0.9999 - tstart
 
 #Finding insertion manouver shenanigens
 results =  webemovin(tstart, xstart, vstart, timesteps, totaltime/timesteps, manualboosttimes, manualboosts)
@@ -103,7 +117,8 @@ print(f"Distance required for easier orbital manouver: {np.linalg.norm(results[1
 
 finalv = results[2]
 stablev = np.sqrt(4*np.pi**2*masses[1]/finalposhyp)
-injectionmanouver = unitvec*stablev - finalv
+refv = finalv - findtargetplanetspeed(totaltime + tstart)
+injectionmanouver = unitvec*stablev - refv
 print(f"Required injection manouver: {injectionmanouver}")
 manualboosttimes = [totaltime]
 manualboosts = [injectionmanouver]
@@ -115,3 +130,5 @@ print(f"Velocity at end with injection manouver {newresults[2]}")
 timearray = np.linspace(0, totaltime, 100_001)
 positionarray = results[1]
 print(finalposrel)
+
+

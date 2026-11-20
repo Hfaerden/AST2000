@@ -75,6 +75,6 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
 
 xstart = [-0.2438, 0.1800]
 vstart = [-6.99, -7.39],
-print(webemovin(0.18, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
+results = (webemovin(0.18, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
 
-print(xstart)
+print(results)
