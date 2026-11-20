@@ -16,8 +16,8 @@ print(seed)
 mission = SM(seed)  #setter opp mission-raketten
 system = SS(seed)   #setter opp solsystemet vårt
 t = 0.18
-tidligere_beregnet_launch_varighet = 0.22621271691949735
-flight_time =  0.07#tidligere_beregnet_launch_varighet - t
+tidligere_beregnet_launch_varighet = 0.22622058993364813
+flight_time =  tidligere_beregnet_launch_varighet - t +0.001
 timesteps = 400000
 dt = flight_time/timesteps
 dtheta = 0   #setter endringen i vinkelen for hver launch
@@ -70,33 +70,35 @@ def spaceflight(theta_offset): #kjører launch- og interplanetarisk- simulering 
     #kjører løseren fra wherearewe.py med verdiene vi har regnet ut
     trajectory = yargh.webemovin(time_used_during_launch, pee[2], pee[3], timesteps, dt)
     planet_positions_start = yargh.interpolation(pee[1])
-    planet_positions_end = yargh.interpolation(t+flight_time)
+    planet_positions_end = yargh.interpolation(t+flight_time) #brukes for plotting
     
     planet_traj = trajectory[3]
     
+    #beregner avstanden til hvert enkelt punkt fra planeten
     distance_str = []
     for i in range(len(planet_traj)):
         current_p_pos = ([planet_traj[i][0][1],planet_traj[i][1][1] ]) 
         distance_str.append(np.linalg.norm(current_p_pos - trajectory[1][i]) )
     
-    min_distance = np.min(distance_str)
+    min_distance = np.min(distance_str) #finner minimumsavstanden
     print(min_distance)
-    print(f'argmin: {np.argmin(distance_str)}')
+    print(f'argmin: {np.argmin(distance_str)}') #debugging
     print(min_distance)
-    closest_point_time = np.argmin(distance_str)*dt + time_used_during_launch
+    closest_point_time = np.argmin(distance_str)*dt + time_used_during_launch #beregner tiden ved closest approach
     print(closest_point_time)
-    abs_r = np.linalg.norm(trajectory[1][np.argmin(distance_str)])
-    l = abs_r * np.sqrt(system.masses[1]/(system.star_mass*10))
+    abs_r = np.linalg.norm(trajectory[1][np.argmin(distance_str)])  
+    l = abs_r * np.sqrt(system.masses[1]/(system.star_mass*10))     #beregner største avstanden vi mener kan gi stabil bane
     print (f'max distance for orbit insertion for our closest approach is {l}, while we are {min_distance} at closest')
     
     return min_distance, closest_point_time, trajectory, planet_positions_start, planet_positions_end
 
 
-    
+#kjører interpoleringskoden for å finne nøyaktig startpunkt
 pos = yargh.interpolation(t)
 p1 = np.array([ pos[0][0], pos[1][0] ])
 p2 = np.array([ pos[0][1], pos[1][1] ])
     
+#setter thetaverdiene for oppskytning
 base_theta_offset = 0.645
 theta = np.arctan((p2[1]-p1[1])/(p2[0]-p1[0])) + base_theta_offset
 
@@ -104,6 +106,7 @@ theta = np.arctan((p2[1]-p1[1])/(p2[0]-p1[0])) + base_theta_offset
 closest_point = []
 flights = []
 
+#kjører romreisen for n thetaer
 for i in range(n_thetaoffsets):
     theta = i*dtheta + base_theta_offset
     current_flight = spaceflight(theta)
@@ -111,6 +114,7 @@ for i in range(n_thetaoffsets):
     closest_point.append(current_flight[0])
 
 
+#Henter ut den thetaen som gir oss nærmest våre kriterier som er Radius+500 kilometer
 closest_point = np.array(closest_point)
 closest_point = np.where( closest_point < (system.radii[1]+500)*1000/const.AU, closest_point+10, closest_point  )
 closest_flight_index = np.argmin(closest_point)  
@@ -125,8 +129,6 @@ print(f'closest point list {closest_point}')
 print(f'speed at closest approach: {trajectory[2][int( (close_time-t)/dt)] }')
 print(f'point min {trajectory[1][int( (close_time-t)/dt)]}')
 
-
-distance, close_time, trajectory, planet_positions_start, planet_positions_end = flights[closest_flight_index]
 
 plt.plot(trajectory[1][:, 0], trajectory[1][:, 1])
 plt.plot(planet_positions_start[0][0], planet_positions_start[1][0], 'ro')
