@@ -71,10 +71,9 @@ def webemovin(starttime, startpos, startv, timestepsN, dt):
     #Returnerer posisjon
     return((starttime + timestepsN * dt), x[-1], v[-1])
 
-#Tester funksjon med verdier fra etter launch
-
+#Tester funksjon med verdier fra etter launch med theta = 0, 100,000 tidssteg med 1 år totalt
 xstart = [-0.2438, 0.1800]
 vstart = [-6.99, -7.39],
-results = (webemovin(0.18, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 0.1/(100_000)))
+results = (webemovin(0.18, [-0.2438, 0.1800], [-6.99, -7.39], 100_000, 1/(100_000)))
 
 print(results)

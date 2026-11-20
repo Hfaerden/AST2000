@@ -75,7 +75,7 @@ def webemovin(starttime, startpos, startv, timestepsN, dt, boosttime, boosts):
         #Regner ut total aksellerasjon
         totalac = np.array([np.sum(acomponents[0]), np.sum(acomponents[1])]) + asun
         #orbitalinjection:
-        if i == timesteps-1 and boosts != []:
+        if i == timesteps -1 and boosts != []:
             vadjust = boosts[0]
         else:
             vadjust = 0
@@ -96,7 +96,7 @@ tstart = 0.18
 totaltime = 0.22621263993364815 - tstart 
 manualboosts = []
 manualboosttimes = []
-timesteps = 100_000
+timesteps = 1000_000
 
 xstart = [0.1709132, -0.25603277]
 vstart = [8.77556, 5.89553]
@@ -131,4 +131,7 @@ timearray = np.linspace(0, totaltime, 100_001)
 positionarray = results[1]
 print(finalposrel)
 
-
+print(finalposhyp) #Printer radiusen til planeten 
+tangensialv = np.dot(refv, unitvec)
+print(tangensialv)#Printer tangensiel komponent av v 
+print(np.sqrt(np.linalg.norm(refv)**2 - tangensialv**2))
