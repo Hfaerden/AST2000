@@ -10,7 +10,18 @@ import wearemovin as yargh
 
 
 
+seed = utils.get_seed('natanies')
 
+mission = SM(seed)  #setter opp mission-raketten
+system = SS(seed)   #setter opp solsystemet vårt
+
+print(system.radii[1])
+print( ((0.001)/(system.rotational_periods[0]/const.day)) )#/(60*60) )
+print(system.rotational_periods[0])
+
+print(f'esc_vel: {np.sqrt((2*const.*system.masses[1]*system.star_mass/(system.radii[1]*1000))}')
+
+'''
 t = 0.18
 
 pos = yargh.interpolation(t)
@@ -28,7 +39,7 @@ p2 = np.array([ pos2[0][1], pos2[1][1] ])
 print(f'p1 {p1} p2: {p2}')
 
 
-
+'''
 
 
 
